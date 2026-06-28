@@ -162,31 +162,35 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
 }
 .kbd-overlay.show { display: flex; }
 .kbd-panel {
-  background: #F2F2F7; border-radius: 16px 16px 0 0;
-  width: 100%; max-width: 760px;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.2); overflow: hidden;
+  background: #CDD0D6;
+  border-radius: 0;
+  width: 100%; max-width: 100%;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
 }
-.kbd-tabs { display: flex; background: #fff; border-bottom: 1px solid #E5E5EA; }
+.kbd-tabs { display: flex; background: #D1D5DB; border-bottom: 1px solid #B0B5BC; }
 .kbd-tab {
-  flex: 1; padding: 12px; text-align: center;
-  font-size: 13px; font-weight: 500; color: #8E8E93;
+  flex: 1; padding: 10px; text-align: center;
+  font-size: 13px; font-weight: 500; color: #555;
   cursor: pointer; border: none; background: transparent;
   font-family: inherit; border-bottom: 2px solid transparent; transition: all 0.15s;
 }
-.kbd-tab.active { color: #1A73E8; border-bottom-color: #1A73E8; }
+.kbd-tab.active { color: #1A73E8; border-bottom-color: #1A73E8; background: rgba(26,115,232,0.06); }
 .kbd-header {
   display: flex; align-items: center;
-  justify-content: space-between; padding: 8px 14px 4px;
+  justify-content: space-between; padding: 6px 12px 4px;
+  background: #D1D5DB;
 }
-.kbd-title { font-size: 11px; font-weight: 500; color: #8E8E93; letter-spacing: 0.3px; text-transform: uppercase; }
+.kbd-title { font-size: 12px; font-weight: 400; color: #555; letter-spacing: 0.2px; font-family: "Kodchasan", sans-serif; }
 .kbd-close {
   width: 26px; height: 26px; border-radius: 50%;
   border: none; background: #E5E5EA;
   cursor: pointer; font-size: 13px; color: #3C3C43;
   display: flex; align-items: center; justify-content: center; font-family: inherit;
 }
-.kbd-keys-wrap { padding: 2px 6px 14px; }
-.kbd-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
+.kbd-keys-wrap { padding: 8px 6px 10px; background: #CDD0D6; }
+.kbd-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; padding: 0 3px; }
 .kbd-key {
   background: #fff; border: none; border-radius: 8px;
   cursor: pointer; font-family: 'Kodchasan', sans-serif;
@@ -377,9 +381,39 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
 .word-phonetic { font-size: 14px; color: var(--text-muted); margin-top: 3px; font-style: italic; }
 .word-type { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 99px; background: var(--thai-gold-light); color: var(--thai-gold-dark); }
 .word-actions { display: flex; gap: 8px; flex-shrink: 0; }
-.btn-action { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.15s; }
-.btn-action:hover { background: var(--thai-gold-light); border-color: var(--thai-gold); }
-.btn-action.active { background: var(--thai-gold-light); border-color: var(--thai-gold); }
+.btn-action {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: none; background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+  position: relative;
+  overflow: visible;
+}
+.btn-action:hover { background: rgba(0,0,0,0.06); }
+.btn-action.active { background: var(--thai-gold-light); }
+
+/* Speaker wave animation */
+.btn-speak { color: var(--text-muted); }
+.btn-speak.playing { color: var(--accent); }
+.btn-speak.playing::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  animation: speakPulse 0.8s ease-out 2;
+}
+@keyframes speakPulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+/* Fav button */
+.btn-fav svg { transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+.btn-fav:active svg { transform: scale(1.3); }
+.btn-fav.active svg path { fill: #E53935; stroke: #E53935; }
 
 .result-meanings { padding: 0; }
 .section-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; padding: 1.25rem 1.5rem 0; }
@@ -1040,8 +1074,18 @@ body { transition: background 0.2s, color 0.2s; }
             <span class="word-type" id="rType"></span>
           </div>
           <div class="word-actions">
-            <button class="btn-action" title="Phát âm" onclick="speak()">🔊</button>
-            <button class="btn-action" id="btnFav" title="Lưu yêu thích" onclick="toggleFav()">🤍</button>
+            <button class="btn-action btn-speak" id="btnSpeak" title="Phát âm" onclick="speak()">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M11 5L6 9H2v6h4l5 4V5z" fill="currentColor"/>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="btn-action btn-fav" id="btnFav" title="Lưu yêu thích" onclick="toggleFav()">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
         </div>
         <div class="result-meanings">
@@ -1416,7 +1460,6 @@ function showResult(word) {
   ).join('');
 
   const isFav = favorites.includes(word.id);
-  document.getElementById('btnFav').textContent = isFav ? '❤️' : '🤍';
   document.getElementById('btnFav').classList.toggle('active', isFav);
 
   document.getElementById('resultSection').classList.add('show');
@@ -1429,24 +1472,26 @@ function speak() {
   if (!currentWord) return;
   const u = new SpeechSynthesisUtterance(currentWord.thai);
   u.lang = 'th-TH'; u.rate = 0.85;
+  const btn = document.getElementById('btnSpeak');
+  btn.classList.add('playing');
+  u.onend = () => btn.classList.remove('playing');
+  u.onerror = () => btn.classList.remove('playing');
   speechSynthesis.speak(u);
-  showToast('🔊 Đang phát âm...');
 }
 
 // ── FAVORITES ─────────────────────────────────────────
 function toggleFav() {
   if (!currentWord) return;
   const idx = favorites.indexOf(currentWord.id);
+  const btn = document.getElementById('btnFav');
   if (idx >= 0) {
     favorites.splice(idx, 1);
-    document.getElementById('btnFav').textContent = '🤍';
-    document.getElementById('btnFav').classList.remove('active');
+    btn.classList.remove('active');
     showToast('Đã bỏ khỏi yêu thích');
   } else {
     favorites.push(currentWord.id);
-    document.getElementById('btnFav').textContent = '❤️';
-    document.getElementById('btnFav').classList.add('active');
-    showToast('❤️ Đã lưu vào yêu thích');
+    btn.classList.add('active');
+    showToast('Đã lưu vào yêu thích');
   }
   localStorage.setItem('thai_favs', JSON.stringify(favorites));
   updateStats();
@@ -1799,26 +1844,38 @@ function closeKeyboardOutside(e) {
 
 function renderKeyboard() {
   const container = document.getElementById('kbdKeys');
-  container.innerHTML = TIS_NORMAL.map((row, ri) => `
-    <div class="kbd-row">
-      ${ri === 0 ? `<button class="kbd-key dark wide" onclick="kbdBS()">⌫</button>` : ''}
-      ${row.map(k => {
-        const ch = kbdShift ? (k.s || k.m) : k.m;
-        const sub = kbdShift ? k.m : k.s;
-        return `<button class="kbd-key" onclick="kbdType('${ch}')">
-          ${ch}${sub ? `<span class="sub">${sub}</span>` : ''}
-        </button>`;
-      }).join('')}
-      ${ri === 0 ? `<button class="kbd-key dark wide" onclick="kbdToggleShift()" style="${kbdShift?'background:#1A73E8;color:#fff':''}">⇧</button>` : ''}
-    </div>
-  `).join('') + `
-    <div class="kbd-row" style="margin-top:4px">
-      <button class="kbd-key dark" onclick="kbdToggleShift()" style="min-width:60px;${kbdShift?'background:#1A73E8;color:#fff':''}">⇧ Shift</button>
-      <button class="kbd-key space-key" onclick="kbdType(' ')">วรรค</button>
-      <button class="kbd-key dark" onclick="kbdClear()" style="min-width:60px">ลบหมด</button>
-      <button class="kbd-key dark" onclick="closeKeyboard()" style="min-width:60px;background:#1A73E8;color:#fff">เสร็จ</button>
-    </div>
-  `;
+  // Store chars in data attr to avoid quote escaping
+  const rowsHTML = TIS_NORMAL.map((row) => {
+    const keys = row.map((k, ki) => {
+      const ch = kbdShift ? (k.s || k.m) : k.m;
+      const sub = kbdShift ? k.m : (k.s || '');
+      return '<button class="kbd-key" data-ch="' + encodeURIComponent(ch) + '" onclick="kbdTypeFromBtn(this)">'
+        + ch
+        + (sub ? '<span class="sub">' + sub + '</span>' : '')
+        + '</button>';
+    }).join('');
+    return '<div class="kbd-row">' + keys + '</div>';
+  }).join('');
+
+  const shiftStyle = kbdShift ? 'background:#1A73E8;color:#fff;' : '';
+  const bottomRow = '<div class="kbd-row" style="margin-top:2px">'
+    + '<button class="kbd-key dark" onclick="kbdToggleShift()" style="' + shiftStyle + 'min-width:52px;font-size:16px">⇧</button>'
+    + '<button class="kbd-key dark" data-ch="KA" onclick="kbdTypeFromBtn(this)" style="min-width:36px">(</button>'
+    + '<button class="kbd-key dark" data-ch="KB" onclick="kbdTypeFromBtn(this)" style="min-width:36px">)</button>'
+    + '<button class="kbd-key space-key" data-ch="SP" onclick="kbdTypeFromBtn(this)">วรรค</button>'
+    + '<button class="kbd-key dark" onclick="kbdBS()" style="min-width:52px;font-size:16px">⌫</button>'
+    + '<button class="kbd-key dark" onclick="closeKeyboard()" style="min-width:52px;background:#1A73E8;color:#fff;font-size:13px">เสร็จ</button>'
+    + '</div>';
+
+  container.innerHTML = rowsHTML + bottomRow;
+}
+
+function kbdTypeFromBtn(btn) {
+  const raw = btn.getAttribute('data-ch');
+  if (raw === 'SP') { kbdType(' '); return; }
+  if (raw === 'KA') { kbdType('('); return; }
+  if (raw === 'KB') { kbdType(')'); return; }
+  kbdType(decodeURIComponent(raw));
 }
 
 function kbdType(char) {
