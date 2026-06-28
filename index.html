@@ -1037,8 +1037,9 @@ async function loadWords() {
     const data = await sbGet('words?select=*&order=thai.asc');
     allWords = data.map(w => ({
       ...w,
-      meanings: Array.isArray(w.meanings) ? w.meanings : [w.meanings],
-      examples: w.examples || []
+      meanings: Array.isArray(w.meanings) ? w.meanings : (w.meanings ? [w.meanings] : []),
+      examples: w.examples || [],
+      definitions: w.definitions || []
     }));
     initWOD();
     renderRecent();
@@ -1270,22 +1271,23 @@ function renderRecent() {
 
 // ── WOD ───────────────────────────────────────────────
 function initWOD() {
-  if (!allWords.length) return;
-  const w = allWords[new Date().getDate() % allWords.length];
-  document.getElementById('wodThai').textContent = w.thai;
-  document.getElementById('wodPhonetic').textContent = w.phonetic || '';
-  document.getElementById('wodMeaning').textContent = (w.meanings||[])[0] || '';
-  document.getElementById('wodCard').style.display = 'flex';
-  window._wodId = w.id;
+  // WOD replaced by quote - no-op
 }
-function lookupWOD() { selectWord(window._wodId); }
+function lookupWOD() {}
 
 // ── PAGES ─────────────────────────────────────────────
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach((b, i) => {
-    b.classList.toggle('active', ['home','favorites','admin'][i] === name);
+  // update nav active state by id
+  ['navHome'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', id === 'navHome' && name === 'home');
+  });
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    const onclick = b.getAttribute('onclick') || '';
+    const match = onclick.match(/showPage\('(\w+)'\)/);
+    if (match) b.classList.toggle('active', match[1] === name);
   });
   if (name === 'favorites') renderFavorites();
   if (name === 'admin') { updateStats(); renderAdminList(allWords); }
@@ -1440,18 +1442,22 @@ function initTheme() {
 
 // ── QUOTE ─────────────────────────────────────────────
 async function loadQuote() {
+  const fallbackText = 'Học một ngôn ngữ mới là mở ra một cánh cửa mới nhìn ra thế giới.';
+  const fallbackAuthor = '— Frank Smith';
   try {
-    const { data, error } = await sbGet('quotes?select=*&order=id.asc') || {};
-    const quotes = Array.isArray(data) ? data : await sbGet('quotes?select=*&order=id.asc');
-    if (quotes && quotes.length) {
+    const quotes = await sbGet('quotes?select=*&order=id.asc');
+    if (Array.isArray(quotes) && quotes.length) {
       const idx = new Date().getDate() % quotes.length;
       const q = quotes[idx];
-      document.getElementById('quoteText').innerHTML = q.text || '';
+      document.getElementById('quoteText').innerHTML = q.text || fallbackText;
       document.getElementById('quoteAuthor').textContent = q.author ? '— ' + q.author : '';
+    } else {
+      document.getElementById('quoteText').textContent = fallbackText;
+      document.getElementById('quoteAuthor').textContent = fallbackAuthor;
     }
   } catch(e) {
-    document.getElementById('quoteText').textContent = 'Học một ngôn ngữ mới là mở ra một cánh cửa mới nhìn ra thế giới.';
-    document.getElementById('quoteAuthor').textContent = '— Frank Smith';
+    document.getElementById('quoteText').textContent = fallbackText;
+    document.getElementById('quoteAuthor').textContent = fallbackAuthor;
   }
 }
 
@@ -1904,11 +1910,13 @@ function initAdminState() {
 
 // Lắng nghe gõ phím bí mật
 document.addEventListener('keydown', function(e) {
-  if (document.activeElement.tagName === 'INPUT' ||
-      document.activeElement.tagName === 'TEXTAREA') return;
+  const tag = document.activeElement.tagName;
+  const ce = document.activeElement.contentEditable;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || ce === 'true') return;
   SECRET_KEYS.push(e.key.toLowerCase());
   if (SECRET_KEYS.length > SECRET_COMBO.length) SECRET_KEYS.shift();
   if (SECRET_KEYS.join('') === SECRET_COMBO) {
+    SECRET_KEYS.length = 0;
     if (!isAdminLoggedIn) openLogin();
     else showPage('admin');
   }
