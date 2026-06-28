@@ -5,26 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Từ điển Thái – Việt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Krub:wght@300;400;500;600&family=Mitr:wght@400;500;600&family=Sriracha&family=Charmonman:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@300;400;500;600&family=Mitr:wght@300;400;500;600&family=Sriracha&family=Charmonman:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --thai-gold: #C8922A;
-  --thai-gold-light: #F5E6C8;
+  --thai-gold-light: #FFF3E0;
   --thai-gold-dark: #8B6318;
-  --thai-red: #A0272A;
-  --surface: #FDFAF5;
+  --thai-red: #1A73E8;
+  --surface: #F8F9FA;
   --surface-card: #FFFFFF;
-  --border: #E8DFC8;
-  --text-primary: #1A1208;
-  --text-secondary: #5C4A2A;
-  --text-muted: #9C8860;
+  --border: #E0E0E0;
+  --text-primary: #202124;
+  --text-secondary: #5F6368;
+  --text-muted: #9AA0A6;
   --radius: 10px;
+  --accent: #1A73E8;
+  --header-bg: #FFFFFF;
+  --header-text: #202124;
+}
+[data-theme="dark"] {
+  --thai-gold: #FFA000;
+  --thai-gold-light: #2D2000;
+  --thai-gold-dark: #FFD54F;
+  --thai-red: #4FC3F7;
+  --accent: #4FC3F7;
+  --surface: #121212;
+  --surface-card: #1E1E1E;
+  --border: #333333;
+  --text-primary: #E8EAED;
+  --text-secondary: #9AA0A6;
+  --text-muted: #5F6368;
+  --header-bg: #1E1E1E;
+  --header-text: #E8EAED;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface); color: var(--text-primary); min-height: 100vh; }
+body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: var(--text-primary); min-height: 100vh; }
 
 .header {
-  background: var(--thai-red);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border);
   padding: 0 1.5rem;
   display: flex;
   align-items: center;
@@ -80,7 +99,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
   outline: none;
   padding: 0;
   font-size: 15px;
-  font-family: 'Krub', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
   background: transparent;
   color: #202124;
   height: 100%;
@@ -131,9 +150,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .header-ac .ac-item:hover { background: #F8F8F8; }
 
 .header-nav { margin-left: auto; display: flex; gap: 4px; flex-shrink:0; }
-.nav-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; border: none; background: rgba(255,255,255,0.12); color: #fff; transition: background 0.15s; white-space:nowrap; }
-.nav-btn:hover { background: rgba(255,255,255,0.22); }
-.nav-btn.active { background: var(--thai-gold); }
+.nav-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); transition: all 0.15s; white-space:nowrap; }
+.nav-btn:hover { background: var(--surface); color: var(--accent); border-color: var(--accent); }
+.nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 /* Thai keyboard */
 .kbd-overlay {
@@ -170,7 +189,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .kbd-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
 .kbd-key {
   background: #fff; border: none; border-radius: 8px;
-  cursor: pointer; font-family: 'Krub', sans-serif;
+  cursor: pointer; font-family: 'Kodchasan', sans-serif;
   font-size: 17px; color: #000;
   box-shadow: 0 1px 0 rgba(0,0,0,0.3), 0 0 0 0.5px rgba(0,0,0,0.1);
   transition: all 0.08s;
@@ -179,16 +198,16 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
   min-width: 30px; height: 44px; padding: 0 5px; position: relative;
 }
 .kbd-key:active { background: #E5E5EA; transform: translateY(1px); box-shadow: none; }
-.kbd-key .sub { font-size: 9px; color: #8E8E93; position: absolute; top: 2px; right: 3px; font-family: 'Plus Jakarta Sans', sans-serif; }
-.kbd-key.dark { background: #ADB5C0; color: #000; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; min-width: 40px; }
+.kbd-key .sub { font-size: 9px; color: #8E8E93; position: absolute; top: 2px; right: 3px; font-family: 'Kodchasan', sans-serif; }
+.kbd-key.dark { background: #ADB5C0; color: #000; font-family: 'Kodchasan', sans-serif; font-size: 12px; min-width: 40px; }
 .kbd-key.dark:active { background: #949AA3; }
-.kbd-key.space-key { flex: 1; max-width: 200px; font-size: 13px; color: #3C3C43; font-family: 'Plus Jakarta Sans',sans-serif; }
+.kbd-key.space-key { flex: 1; max-width: 200px; font-size: 13px; color: #3C3C43; font-family: 'Kodchasan', sans-serif; }
 .handwrite-panel { padding: 14px 16px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .handwrite-canvas-wrap { width: 100%; max-width: 500px; background: #fff; border-radius: 12px; border: 1.5px solid #E5E5EA; overflow: hidden; }
 #handwriteCanvas { display: block; width: 100%; height: 150px; cursor: crosshair; touch-action: none; }
 .handwrite-hint { font-size: 12px; color: #8E8E93; text-align: center; }
 .handwrite-results { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 44px; }
-.hw-result-btn { padding: 8px 18px; background: #fff; border: 1.5px solid #1A73E8; border-radius: 99px; font-family: 'Krub', sans-serif; font-size: 20px; color: #1A73E8; cursor: pointer; transition: all 0.15s; }
+.hw-result-btn { padding: 8px 18px; background: #fff; border: 1.5px solid #1A73E8; border-radius: 99px; font-family: 'Kodchasan', sans-serif; font-size: 20px; color: #1A73E8; cursor: pointer; transition: all 0.15s; }
 .hw-result-btn:hover { background: #E8F0FE; }
 .handwrite-actions { display: flex; gap: 10px; }
 .hw-btn { padding: 8px 20px; border-radius: 8px; border: none; font-size: 13px; font-family: inherit; cursor: pointer; }
@@ -220,12 +239,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 }
 .hero-logo-text { text-align: left; }
 .hero-title {
-  font-family: 'Krub', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
   font-size: 26px; font-weight: 700;
   color: var(--text-primary);
   line-height: 1.1;
 }
-.hero-title span { color: var(--thai-red); }
+.hero-title span { color: var(--accent); }
 .hero-sub-title {
   font-size: 12px; color: var(--text-muted);
   font-weight: 400; margin-top: 2px;
@@ -240,21 +259,21 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .search-wrap {
   position: relative;
   display: flex;
-  border: 2px solid var(--thai-red);
+  border: 1.5px solid var(--border);
   border-radius: 40px;
   overflow: hidden;
   background: var(--surface-card);
-  box-shadow: 0 4px 20px rgba(160,39,42,0.12);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   transition: box-shadow 0.2s;
 }
 .search-wrap:focus-within {
-  box-shadow: 0 4px 28px rgba(160,39,42,0.22);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
 }
 .search-input {
   flex: 1;
   padding: 16px 20px;
   font-size: 18px;
-  font-family: 'Krub', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
   border: none;
   background: transparent;
   color: var(--text-primary);
@@ -262,7 +281,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 }
 .search-input::placeholder { color: var(--text-muted); }
 .search-btn {
-  background: var(--thai-red);
+  background: var(--accent);
   border: none;
   padding: 0 24px;
   cursor: pointer;
@@ -272,7 +291,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
   transition: background 0.15s;
   flex-shrink: 0;
 }
-.search-btn:hover { background: #8B1F22; }
+.search-btn:hover { opacity: 0.88; }
 .search-hint {
   font-size: 12px; color: var(--text-muted); text-align: center;
   margin-bottom: 0;
@@ -287,18 +306,18 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
   border-radius: 99px;
   background: var(--surface-card);
   border: 1px solid var(--border);
-  font-family: 'Krub', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
   font-size: 13px; color: var(--text-secondary);
   cursor: pointer; transition: all 0.15s;
 }
-.search-tag:hover { border-color: var(--thai-red); color: var(--thai-red); background: #FFF0F0; }
+.search-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--thai-gold-light); }
 
 .autocomplete { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; margin-top: 6px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.1); display: none; max-width: 620px; margin-left: auto; margin-right: auto; }
 .autocomplete.show { display: block; }
 .ac-item { padding: 10px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; }
 .ac-item:last-child { border-bottom: none; }
 .ac-item:hover, .ac-item.highlighted { background: var(--thai-gold-light); }
-.ac-thai { font-family: 'Krub', sans-serif; font-size: 16px; color: var(--text-primary); }
+.ac-thai { font-family: 'Kodchasan', sans-serif; font-size: 16px; color: var(--text-primary); }
 .ac-phonetic { font-size: 12px; color: var(--text-muted); }
 .ac-viet { margin-left: auto; font-size: 13px; color: var(--thai-gold-dark); font-weight: 500; }
 .ac-type { font-size: 11px; background: var(--thai-gold-light); color: var(--thai-gold-dark); padding: 2px 8px; border-radius: 99px; }
@@ -374,9 +393,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: background 0.15s;
 }
-.def-block.open .def-toggle { background: var(--thai-red); color: #fff; }
+.def-block.open .def-toggle { background: var(--accent); color: #fff; }
 .def-num-thai {
-  font-family: 'Krub', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
   font-size: 13px; font-weight: 600;
   color: var(--thai-red);
   min-width: 18px;
@@ -392,7 +411,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 }
 .def-summary { flex: 1; min-width: 0; }
 .def-thai-meaning {
-  font-family: 'Krub', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
   font-size: 14px; color: #6B3FA0;
   line-height: 1.4;
 }
@@ -418,12 +437,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 }
 .def-ex-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .def-ex-num {
-  font-family: 'Krub', sans-serif;
-  font-size: 11px; color: var(--thai-red);
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 11px; color: var(--accent);
   font-weight: 600; margin-bottom: 2px;
 }
 .def-ex-thai {
-  font-family: 'Krub', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
   font-size: 14px; color: #6B3FA0;
   line-height: 1.5;
 }
@@ -456,11 +475,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .rte-sep { width: 1px; background: var(--border); margin: 2px 4px; }
 .rte-area {
   min-height: 70px; padding: 10px 12px;
-  font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-family: 'Kodchasan', sans-serif;
   outline: none; line-height: 1.6;
   color: var(--text-primary);
 }
-.rte-area[data-lang="thai"] { font-family: 'Krub', sans-serif; }
+.rte-area[data-lang="thai"] { font-family: 'Kodchasan', sans-serif; }
 
 /* Admin def builder */
 .def-builder {
@@ -480,18 +499,18 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .ex-row:last-child { margin-bottom: 0; }
 .btn-add-ex { font-size: 12px; color: var(--thai-gold-dark); background: var(--thai-gold-light); border: none; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-family: inherit; }
 .btn-remove { width: 26px; height: 26px; border-radius: 5px; border: none; background: #FFE8E8; color: #C0392B; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
-.ex-thai { font-family: 'Krub', sans-serif; font-size: 15px; color: var(--text-primary); margin-bottom: 2px; }
+.ex-thai { font-family: 'Kodchasan', sans-serif; font-size: 15px; color: var(--text-primary); margin-bottom: 2px; }
 .ex-viet { font-size: 13px; color: var(--text-secondary); }
 
 .related-section { margin-bottom: 1.5rem; }
 .section-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; }
 .related-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.related-pill { padding: 6px 14px; border: 1px solid var(--border); border-radius: 99px; font-family: 'Krub', sans-serif; font-size: 14px; color: var(--text-secondary); background: var(--surface-card); cursor: pointer; transition: all 0.15s; }
+.related-pill { padding: 6px 14px; border: 1px solid var(--border); border-radius: 99px; font-family: 'Kodchasan', sans-serif; font-size: 14px; color: var(--text-secondary); background: var(--surface-card); cursor: pointer; transition: all 0.15s; }
 .related-pill:hover { border-color: var(--thai-gold); background: var(--thai-gold-light); color: var(--thai-gold-dark); }
 
 .wod-card { background: var(--thai-red); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; }
 .wod-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
-.wod-thai { font-family: 'Krub', sans-serif; font-size: 28px; font-weight: 600; color: #fff; }
+.wod-thai { font-family: 'Kodchasan', sans-serif; font-size: 28px; font-weight: 600; color: #fff; }
 .wod-phonetic { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
 .wod-meaning { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 8px; }
 .wod-btn { margin-left: auto; padding: 8px 16px; background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-family: inherit; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
@@ -500,7 +519,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .recent-section { margin-bottom: 1.5rem; }
 .recent-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; cursor: pointer; transition: border-color 0.15s; }
 .recent-row:hover { border-color: var(--thai-gold); }
-.recent-thai { font-family: 'Krub', sans-serif; font-size: 15px; color: var(--text-primary); }
+.recent-thai { font-family: 'Kodchasan', sans-serif; font-size: 15px; color: var(--text-primary); }
 .recent-viet { font-size: 13px; color: var(--text-muted); margin-left: auto; }
 
 .empty-state { text-align: center; padding: 3rem 1rem; display: none; }
@@ -521,9 +540,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text-primary); color: #fff; padding: 10px 20px; border-radius: 99px; font-size: 13px; font-weight: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; pointer-events: none; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 
+/* Edit modal */
+.btn-small.edit:hover { background: #E8F0FE; border-color: var(--accent); }
 /* Footer clock */
 #siteFooter {
-  background: var(--thai-red);
+  background: var(--header-bg);
+  border-top: 1px solid var(--border);
   padding: 14px 1.5rem;
   text-align: center;
   margin-top: 3rem;
@@ -535,16 +557,63 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
   gap: 4px;
 }
 .clock-thai {
-  font-family: 'Krub', sans-serif;
+  font-family: 'Kodchasan', sans-serif;
   font-size: 15px;
-  color: rgba(255,255,255,0.9);
+  color: var(--text-secondary);
   font-weight: 400;
   letter-spacing: 0.3px;
 }
 .clock-viet {
   font-size: 13px;
-  color: rgba(255,255,255,0.7);
+  color: var(--text-muted);
   font-weight: 300;
+}
+
+/* Dark mode */
+body { transition: background 0.2s, color 0.2s; }
+
+/* Longdo-style word list sidebar for admin */
+.admin-wordlist-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 600px) { .admin-wordlist-wrap { grid-template-columns: 1fr; } }
+
+/* Quote card */
+.quote-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.quote-icon {
+  font-size: 40px;
+  color: var(--accent);
+  opacity: 0.2;
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  line-height: 1;
+  font-family: Georgia, serif;
+}
+.quote-text {
+  font-size: 16px;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.7;
+  padding-left: 8px;
+  min-height: 28px;
+}
+.quote-author {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  padding-left: 8px;
+  font-weight: 500;
 }
 
 /* Login modal */
@@ -575,7 +644,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
   transition: border-color 0.2s;
   text-align: center; letter-spacing: 3px;
 }
-.modal-input:focus { border-color: var(--thai-red); }
+.modal-input:focus { border-color: var(--accent); }
 .modal-input.error { border-color: #E53E3E; animation: shake 0.3s; }
 @keyframes shake {
   0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)}
@@ -583,7 +652,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .modal-error { font-size: 12px; color: #E53E3E; margin-bottom: 10px; min-height: 16px; }
 .modal-btn {
   width: 100%; padding: 11px;
-  background: var(--thai-red); color: #fff;
+  background: var(--accent); color: #fff;
   border: none; border-radius: 8px;
   font-size: 14px; font-weight: 600;
   font-family: inherit; cursor: pointer;
@@ -610,7 +679,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .admin-sub { font-size: 13px; color: var(--text-muted); }
 .admin-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
 .stat-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; }
-.stat-num { font-size: 24px; font-weight: 600; color: var(--thai-red); }
+.stat-num { font-size: 24px; font-weight: 600; color: var(--accent); }
 .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
 .add-word-form { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
@@ -620,7 +689,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .form-group.full { grid-column: 1 / -1; }
 .form-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
 .form-input, .form-select, .form-textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; background: var(--surface); color: var(--text-primary); outline: none; transition: border-color 0.2s; }
-.form-input.thai-font { font-family: 'Krub', sans-serif; font-size: 16px; }
+.form-input.thai-font { font-family: 'Kodchasan', sans-serif; font-size: 16px; }
 .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--thai-gold); box-shadow: 0 0 0 3px rgba(200,146,42,0.1); }
 .form-textarea { min-height: 70px; resize: vertical; }
 .btn-submit { width: 100%; padding: 11px; background: var(--thai-red); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
@@ -629,11 +698,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 
 .word-list-admin { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
 .wla-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-.wla-search { flex: 1; padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Krub', sans-serif; background: var(--surface); outline: none; }
+.wla-search { flex: 1; padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Kodchasan', sans-serif; background: var(--surface); outline: none; }
 .wla-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); transition: background 0.1s; }
 .wla-row:last-child { border-bottom: none; }
 .wla-row:hover { background: var(--surface); }
-.wla-thai { font-family: 'Krub', sans-serif; font-size: 16px; color: var(--text-primary); min-width: 120px; }
+.wla-thai { font-family: 'Kodchasan', sans-serif; font-size: 16px; color: var(--text-primary); min-width: 120px; }
 .wla-viet { font-size: 13px; color: var(--text-secondary); flex: 1; }
 .wla-type { font-size: 11px; background: var(--thai-gold-light); color: var(--thai-gold-dark); padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
 .wla-actions { display: flex; gap: 4px; }
@@ -667,6 +736,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 
   <nav class="header-nav">
     <button class="nav-btn active" id="navHome" onclick="showPage('home')">🏠 Trang chủ</button>
+    <button class="nav-btn" id="darkModeBtn" onclick="toggleDark()" title="Dark mode">🌙</button>
     <button class="nav-btn" onclick="showPage('favorites')">❤️ Yêu thích</button>
     <button class="nav-btn" id="adminNavBtn" onclick="showPage('admin')" style="display:none">⚙️ Admin</button>
   </nav>
@@ -772,14 +842,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
     </div>
 
     <div id="homeDefault">
-      <div class="wod-card" id="wodCard" style="display:none">
-        <div>
-          <div class="wod-label">Từ trong ngày</div>
-          <div class="wod-thai" id="wodThai"></div>
-          <div class="wod-phonetic" id="wodPhonetic"></div>
-          <div class="wod-meaning" id="wodMeaning"></div>
-        </div>
-        <button class="wod-btn" onclick="lookupWOD()">Xem chi tiết →</button>
+      <!-- Quote of the day -->
+      <div class="quote-card" id="quoteCard">
+        <div class="quote-icon">❝</div>
+        <div class="quote-text" id="quoteText">Đang tải câu trích dẫn...</div>
+        <div class="quote-author" id="quoteAuthor"></div>
       </div>
       <div class="recent-section" id="recentSection" style="display:none">
         <div class="section-title">Đã tra gần đây</div>
@@ -799,6 +866,29 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 
   <!-- ADMIN -->
   <div id="page-admin" class="page">
+    <!-- Quote management -->
+    <div class="add-word-form" style="margin-bottom:1rem">
+      <div class="form-title">💬 Quản lý câu quote trang chủ</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Nội dung câu quote *</label>
+          <div class="rte-wrap">
+            <div class="rte-toolbar">
+              <button class="rte-btn" onclick="rteCmd('bold',this)"><b>B</b></button>
+              <button class="rte-btn" onclick="rteCmd('italic',this)"><i>I</i></button>
+              <button class="rte-btn" onclick="rteCmd('underline',this)"><u>U</u></button>
+            </div>
+            <div class="rte-area" contenteditable="true" id="quoteInput" placeholder="Nhập câu trích dẫn..."></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tác giả</label>
+          <input class="form-input" id="quoteAuthorInput" placeholder="Tên tác giả (tùy chọn)">
+        </div>
+      </div>
+      <button class="btn-submit" onclick="saveQuote()">Lưu câu quote</button>
+    </div>
+
     <div class="admin-header" style="display:flex;align-items:center;justify-content:space-between">
       <div>
         <div class="admin-title">⚙️ Quản lý từ vựng <span class="admin-badge">● Đã đăng nhập</span></div>
@@ -852,6 +942,49 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 <div class="toast" id="toast"></div>
 
 <!-- Admin Login Modal -->
+<!-- Edit Word Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box" style="width:400px;text-align:left">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div style="font-size:16px;font-weight:600;color:var(--text-primary)">✏️ Chỉnh sửa từ</div>
+      <button class="modal-cancel" onclick="closeEditModal()">✕</button>
+    </div>
+    <input type="hidden" id="editId">
+    <div class="form-group" style="margin-bottom:10px">
+      <label class="form-label">Từ tiếng Thái *</label>
+      <input class="form-input" style="font-family:Kodchasan,sans-serif;font-size:16px" id="editThai">
+    </div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="form-group">
+        <label class="form-label">Phiên âm</label>
+        <input class="form-input" id="editPhonetic">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Loại từ</label>
+        <select class="form-select" id="editType">
+          <option value="danh từ">Danh từ</option>
+          <option value="động từ">Động từ</option>
+          <option value="tính từ">Tính từ</option>
+          <option value="thán từ">Thán từ</option>
+          <option value="trạng từ">Trạng từ</option>
+          <option value="giới từ">Giới từ</option>
+          <option value="liên từ">Liên từ</option>
+          <option value="đại từ">Đại từ</option>
+          <option value="thành ngữ">Thành ngữ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label class="form-label">Nghĩa tiếng Việt (cách nhau bằng dấu phẩy)</label>
+      <input class="form-input" id="editMeaning">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-submit" id="btnSaveEdit" onclick="saveEdit()" style="flex:1">Lưu thay đổi</button>
+      <button onclick="closeEditModal()" style="padding:11px 18px;border:1px solid var(--border);border-radius:8px;background:transparent;font-size:13px;font-family:inherit;cursor:pointer;color:var(--text-muted)">Hủy</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="loginModal">
   <div class="modal-box">
     <div class="modal-icon">🔐</div>
@@ -1218,16 +1351,60 @@ function renderAdminList(list) {
   adminFiltered = list;
   document.getElementById('adminList').innerHTML = list.length
     ? list.map(w => `
-      <div class="wla-row">
+      <div class="wla-row" id="wla-${w.id}">
         <div class="wla-thai">${w.thai}</div>
         <span class="wla-type">${w.type||''}</span>
         <div class="wla-viet">${(w.meanings||[])[0]||''}</div>
         <div class="wla-actions">
+          <button class="btn-small edit" title="Chỉnh sửa" onclick="openEditModal(${w.id})">✏️</button>
           <button class="btn-small del" title="Xóa" onclick="deleteWord(${w.id})">🗑️</button>
         </div>
       </div>
     `).join('')
     : '<div class="loading-bar">Không có từ nào</div>';
+}
+
+// Edit word
+function openEditModal(id) {
+  const w = allWords.find(x => x.id === id);
+  if (!w) return;
+  document.getElementById('editId').value = id;
+  document.getElementById('editThai').value = w.thai || '';
+  document.getElementById('editPhonetic').value = w.phonetic || '';
+  document.getElementById('editType').value = w.type || 'danh từ';
+  document.getElementById('editMeaning').value = (w.meanings || []).join(', ');
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('show');
+}
+
+async function saveEdit() {
+  const id = parseInt(document.getElementById('editId').value);
+  const thai = document.getElementById('editThai').value.trim();
+  const phonetic = document.getElementById('editPhonetic').value.trim();
+  const type = document.getElementById('editType').value;
+  const meaningsRaw = document.getElementById('editMeaning').value.trim();
+  if (!thai) { showToast('⚠️ Vui lòng nhập từ tiếng Thái'); return; }
+  const meanings = meaningsRaw.split(',').map(m => m.trim()).filter(Boolean);
+  const btn = document.getElementById('btnSaveEdit');
+  btn.disabled = true; btn.textContent = 'Đang lưu...';
+  try {
+    const resp = await fetch(\`\${SUPABASE_URL}/rest/v1/words?id=eq.\${id}\`, {
+      method: 'PATCH',
+      headers: { ...headers, 'Prefer': 'return=representation' },
+      body: JSON.stringify({ thai, phonetic: phonetic || null, type, meanings })
+    });
+    if (resp.ok) {
+      const idx = allWords.findIndex(x => x.id === id);
+      if (idx >= 0) allWords[idx] = { ...allWords[idx], thai, phonetic, type, meanings };
+      closeEditModal();
+      showToast('✅ Đã cập nhật từ: ' + thai);
+      renderAdminList(allWords);
+    } else { showToast('⚠️ Lỗi khi cập nhật'); }
+  } catch(e) { showToast('⚠️ Lỗi kết nối'); }
+  btn.disabled = false; btn.textContent = 'Lưu thay đổi';
 }
 
 function updateStats() {
@@ -1242,6 +1419,40 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+
+// ── DARK MODE ─────────────────────────────────────────
+function toggleDark() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  document.getElementById('darkModeBtn').textContent = isDark ? '🌙' : '☀️';
+}
+function initTheme() {
+  const saved = localStorage.getItem('theme') || 'light';
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    const btn = document.getElementById('darkModeBtn');
+    if (btn) btn.textContent = '☀️';
+  }
+}
+
+// ── QUOTE ─────────────────────────────────────────────
+async function loadQuote() {
+  try {
+    const { data, error } = await sbGet('quotes?select=*&order=id.asc') || {};
+    const quotes = Array.isArray(data) ? data : await sbGet('quotes?select=*&order=id.asc');
+    if (quotes && quotes.length) {
+      const idx = new Date().getDate() % quotes.length;
+      const q = quotes[idx];
+      document.getElementById('quoteText').innerHTML = q.text || '';
+      document.getElementById('quoteAuthor').textContent = q.author ? '— ' + q.author : '';
+    }
+  } catch(e) {
+    document.getElementById('quoteText').textContent = 'Học một ngôn ngữ mới là mở ra một cánh cửa mới nhìn ra thế giới.';
+    document.getElementById('quoteAuthor').textContent = '— Frank Smith';
+  }
 }
 
 // ── SCROLL → STICKY SEARCH ───────────────────────────
@@ -1548,6 +1759,19 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
+async function saveQuote() {
+  const text = document.getElementById('quoteInput').innerHTML.trim();
+  const author = document.getElementById('quoteAuthorInput').value.trim();
+  if (!text) { showToast('⚠️ Nhập nội dung câu quote'); return; }
+  try {
+    await sbPost('quotes', { text, author });
+    showToast('✅ Đã lưu câu quote!');
+    document.getElementById('quoteInput').innerHTML = '';
+    document.getElementById('quoteAuthorInput').value = '';
+    loadQuote();
+  } catch(e) { showToast('⚠️ Lỗi — cần tạo bảng quotes trong Supabase'); }
+}
+
 // ── DEF BUILDER ───────────────────────────────────────
 const WORD_TYPES = ['Danh từ','Động từ','Tính từ','Thán từ','Trạng từ','Giới từ','Liên từ','Đại từ','Thành ngữ'];
 let defBlocks = [];
@@ -1742,6 +1966,8 @@ function doSearch() {
 // ── INIT ──────────────────────────────────────────────
 loadWords();
 initAdminState();
+initTheme();
+loadQuote();
 </script>
 </body>
 </html>
