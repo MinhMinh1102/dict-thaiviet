@@ -460,7 +460,7 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
   font-family: 'Kodchasan', sans-serif;
   font-size: 14px; color: #6B3FA0;
   line-height: 1.5;
-}
+} /* fixed */
 .def-ex-viet {
   font-size: 13px; color: var(--text-secondary);
   margin-top: 2px; line-height: 1.4;
@@ -494,7 +494,7 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
   outline: none; line-height: 1.6;
   color: var(--text-primary);
 }
-.rte-area[data-lang="thai"] { font-family: 'Kodchasan', sans-serif; }
+.rte-area[data-lang="thai"] { font-family: 'Kodchasan', sans-serif; } /* thai rte */
 
 /* Admin def builder */
 .def-builder {
@@ -629,6 +629,178 @@ body { transition: background 0.2s, color 0.2s; }
   margin-top: 10px;
   padding-left: 8px;
   font-weight: 500;
+}
+
+/* PopThai */
+.search-mode-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 3px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.search-mode-tab {
+  padding: 6px 20px;
+  border-radius: 99px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Kodchasan', sans-serif;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.search-mode-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* PopThai sentence area */
+.popthai-wrap { display: none; }
+.popthai-wrap.show { display: block; }
+.popthai-input-area {
+  position: relative;
+  margin-bottom: 12px;
+}
+.popthai-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 14px 50px 14px 18px;
+  font-size: 17px;
+  font-family: 'Kodchasan', sans-serif;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  outline: none;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+.popthai-textarea:focus { border-color: var(--accent); }
+.popthai-textarea::placeholder { color: var(--text-muted); }
+.popthai-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto 20px;
+  transition: opacity 0.15s;
+}
+.popthai-btn:hover { opacity: 0.88; }
+
+/* Segmented words display */
+.popthai-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  min-height: 60px;
+}
+.pt-word {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: 1.5px solid transparent;
+}
+.pt-word:hover { background: var(--thai-gold-light); }
+.pt-word.active {
+  background: var(--thai-gold-light);
+  border-color: var(--accent);
+}
+.pt-word-thai {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 20px;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.pt-word-phonetic {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.pt-word.space-word {
+  cursor: default;
+  padding: 6px 4px;
+}
+.pt-word.space-word .pt-word-thai { color: transparent; font-size: 12px; }
+
+/* PopThai definition panel */
+.pt-def-panel {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  display: none;
+}
+.pt-def-panel.show { display: block; }
+.pt-def-header {
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.pt-def-thai {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.pt-def-phonetic {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.pt-def-body { padding: 12px 18px; }
+.pt-def-row {
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  align-items: baseline;
+}
+.pt-def-row:last-child { border-bottom: none; }
+.pt-def-num {
+  width: 22px; height: 22px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pt-def-text {
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+.pt-not-found {
+  padding: 16px 18px;
+  font-size: 14px;
+  color: var(--text-muted);
 }
 
 /* Login modal */
@@ -817,6 +989,13 @@ body { transition: background 0.2s, color 0.2s; }
           </div>
           <div id="autocomplete" class="autocomplete"></div>
         </div>
+        <!-- Mode tabs -->
+        <div class="search-mode-tabs">
+          <button class="search-mode-tab active" id="modeTabWord" onclick="switchSearchMode('word')">🔍 Tra từ</button>
+          <button class="search-mode-tab" id="modeTabPop" onclick="switchSearchMode('popthai')">✂️ Tách từ</button>
+        </div>
+
+        <!-- Quick tags (word mode) -->
         <div class="search-tags" id="quickTags">
           <span class="search-tag" onclick="quickSearch('สวัสดี')">สวัสดี</span>
           <span class="search-tag" onclick="quickSearch('ขอบคุณ')">ขอบคุณ</span>
@@ -824,6 +1003,23 @@ body { transition: background 0.2s, color 0.2s; }
           <span class="search-tag" onclick="quickSearch('กิน')">กิน</span>
           <span class="search-tag" onclick="quickSearch('บ้าน')">บ้าน</span>
           <span class="search-tag" onclick="quickSearch('น้ำ')">น้ำ</span>
+        </div>
+
+        <!-- PopThai mode -->
+        <div class="popthai-wrap" id="popthaiWrap">
+          <div class="popthai-input-area">
+            <textarea class="popthai-textarea" id="popthaiInput"
+              placeholder="วางข้อความภาษาไทยที่ต้องการแยกคำ...&#10;Ví dụ: นี่คือข้อความทดสอบ"></textarea>
+          </div>
+          <button class="popthai-btn" onclick="runPopthai()">✂️ Tách từ</button>
+          <div class="popthai-words" id="popthaiWords" style="display:none"></div>
+          <div class="pt-def-panel" id="ptDefPanel">
+            <div class="pt-def-header">
+              <span class="pt-def-thai" id="ptDefThai"></span>
+              <span class="pt-def-phonetic" id="ptDefPhonetic"></span>
+            </div>
+            <div class="pt-def-body" id="ptDefBody"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -842,7 +1038,6 @@ body { transition: background 0.2s, color 0.2s; }
           </div>
         </div>
         <div class="result-meanings">
-          <div class="section-label">Định nghĩa</div>
           <div id="rDefinitions"></div>
         </div>
       </div>
@@ -1185,7 +1380,7 @@ function showResult(word) {
               <div class="def-viet-meaning">${def.viet_meaning || ''}</div>
             </div>
           </div>
-          ${exHTML ? `<div class="def-body"><div class="def-ex-label">Ví dụ câu</div>${exHTML}</div>` : ''}
+          ${exHTML ? `<div class="def-body">${exHTML}</div>` : ''}
         </div>
       `;
     }).join('');
@@ -1975,6 +2170,148 @@ function logoutAdmin() {
   document.getElementById('adminNavBtn').style.display = 'none';
   showPage('home');
   showToast('Đã đăng xuất Admin');
+}
+
+
+// ── SEARCH MODE ───────────────────────────────────────
+let searchMode = 'word'; // 'word' | 'popthai'
+
+function switchSearchMode(mode) {
+  searchMode = mode;
+  document.getElementById('modeTabWord').classList.toggle('active', mode === 'word');
+  document.getElementById('modeTabPop').classList.toggle('active', mode === 'popthai');
+  document.getElementById('quickTags').style.display = mode === 'word' ? 'flex' : 'none';
+  document.getElementById('popthaiWrap').classList.toggle('show', mode === 'popthai');
+
+  const searchWrap = document.querySelector('.search-inner');
+  const searchInput = document.getElementById('searchInput');
+  if (mode === 'popthai') {
+    searchWrap.style.display = 'none';
+    document.getElementById('autocomplete').classList.remove('show');
+    document.getElementById('resultSection').classList.remove('show');
+    document.getElementById('homeDefault').style.display = 'none';
+    setTimeout(() => document.getElementById('popthaiInput').focus(), 100);
+  } else {
+    searchWrap.style.display = 'flex';
+    document.getElementById('homeDefault').style.display = 'block';
+    document.getElementById('popthaiWords').style.display = 'none';
+    document.getElementById('ptDefPanel').classList.remove('show');
+  }
+}
+
+// ── POPTHAI ───────────────────────────────────────────
+// Thai word segmentation using greedy longest-match against our dictionary
+function segmentThai(text) {
+  if (!text.trim()) return [];
+  const result = [];
+  let i = 0;
+  const thaiWordSet = new Set(allWords.map(w => w.thai));
+
+  while (i < text.length) {
+    const ch = text[i];
+    // Non-Thai character (space, punctuation, latin)
+    if (ch.charCodeAt(0) < 0x0E00 || ch.charCodeAt(0) > 0x0E7F) {
+      if (ch === ' ' || ch === '\n') {
+        result.push({ thai: ' ', isSpace: true });
+      } else {
+        result.push({ thai: ch, isSpace: false, isLatin: true });
+      }
+      i++;
+      continue;
+    }
+    // Try longest match first (up to 15 chars)
+    let matched = false;
+    for (let len = Math.min(15, text.length - i); len >= 1; len--) {
+      const candidate = text.slice(i, i + len);
+      if (thaiWordSet.has(candidate) || len === 1) {
+        result.push({ thai: candidate, isSpace: false });
+        i += len;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) { result.push({ thai: text[i], isSpace: false }); i++; }
+  }
+  return result;
+}
+
+function runPopthai() {
+  const text = document.getElementById('popthaiInput').value.trim();
+  if (!text) { showToast('⚠️ Vui lòng nhập đoạn văn bản Thái'); return; }
+
+  const segments = segmentThai(text);
+  const wordsEl = document.getElementById('popthaiWords');
+  wordsEl.style.display = 'flex';
+  document.getElementById('ptDefPanel').classList.remove('show');
+
+  // Store segments globally for click access
+  window._ptSegments = segments;
+  wordsEl.innerHTML = segments.map((seg, idx) => {
+    if (seg.isSpace) return '<span class="pt-word space-word"><span class="pt-word-thai">_</span></span>';
+    const word = allWords.find(w => w.thai === seg.thai);
+    const phonetic = word ? (word.phonetic || '') : '';
+    const phoneticHTML = phonetic ? '<span class="pt-word-phonetic">' + phonetic + '</span>' : '';
+    return '<span class="pt-word ' + (word ? '' : 'no-def') + '" id="ptw-' + idx + '" onclick="ptWordClick(' + idx + ')">'
+      + '<span class="pt-word-thai">' + seg.thai + '</span>'
+      + phoneticHTML
+      + '</span>';
+  }).join('');
+}
+
+function ptWordClick(idx) {
+  const seg = window._ptSegments && window._ptSegments[idx];
+  if (!seg || seg.isSpace) return;
+  const thai = seg.thai;
+
+  // Highlight selected
+  document.querySelectorAll('.pt-word').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('ptw-' + idx);
+  if (el) el.classList.add('active');
+
+  const panel = document.getElementById('ptDefPanel');
+  const word = allWords.find(w => w.thai === thai);
+
+  document.getElementById('ptDefThai').textContent = thai;
+
+  if (!word) {
+    document.getElementById('ptDefPhonetic').textContent = '';
+    document.getElementById('ptDefBody').innerHTML = `<div class="pt-not-found">Không tìm thấy "${thai}" trong từ điển</div>`;
+    panel.classList.add('show');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  document.getElementById('ptDefPhonetic').textContent = word.phonetic || '';
+
+  // Show definitions
+  const defs = word.definitions || [];
+  const meanings = word.meanings || [];
+  let bodyHTML = '';
+
+  if (defs.length) {
+    bodyHTML = defs.map((def, i) => `
+      <div class="pt-def-row">
+        <div class="pt-def-num">${i+1}</div>
+        <div class="pt-def-text">
+          ${def.type ? `<span style="font-size:11px;background:var(--thai-gold-light);color:var(--thai-gold-dark);padding:1px 8px;border-radius:99px;margin-right:6px">${def.type}</span>` : ''}
+          ${def.viet_meaning || def.thai_meaning || ''}
+        </div>
+      </div>
+    `).join('');
+  } else if (meanings.length) {
+    bodyHTML = meanings.map((m, i) => `
+      <div class="pt-def-row">
+        <div class="pt-def-num">${i+1}</div>
+        <div class="pt-def-text">${m}</div>
+      </div>
+    `).join('');
+  } else {
+    bodyHTML = `<div class="pt-not-found">Chưa có định nghĩa cho từ này</div>`;
+  }
+
+  document.getElementById('ptDefBody').innerHTML = bodyHTML;
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function quickSearch(term) {
