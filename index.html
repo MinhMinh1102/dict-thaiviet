@@ -726,6 +726,9 @@ body { transition: background 0.2s, color 0.2s; }
   border: 1.5px solid transparent;
 }
 .pt-word:hover { background: var(--thai-gold-light); }
+.pt-word.has-def { cursor: pointer; }
+.pt-word.has-def .pt-word-thai { color: var(--accent); }
+.pt-word:not(.has-def) { cursor: default; opacity: 0.6; }
 .pt-word.active {
   background: var(--thai-gold-light);
   border-color: var(--accent);
@@ -2201,48 +2204,117 @@ function switchSearchMode(mode) {
 }
 
 // ── POPTHAI ───────────────────────────────────────────
-async function runPopthai() {
+// ── THAI WORD SEGMENTATION (Longest Match + Dictionary) ──
+// Bảng ký tự Thái - phụ âm, สระ, วรรณยุกต์
+const THAI_CONSONANTS = new Set('กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ');
+const THAI_VOWELS_ABOVE = new Set('ัิีึืํ็่้๊๋');
+const THAI_VOWELS_BELOW = new Set('ุู');
+const THAI_FINAL = new Set('าๅๆๆ์');
+
+// Phân đoạn cụm âm tiết (1 âm tiết = phụ âm đầu + สระ + ตัวสะกด)
+function getThaiSyllables(text) {
+  const syllables = [];
+  let i = 0;
+  while (i < text.length) {
+    const code = text.charCodeAt(i);
+    // Ký tự không phải Thái
+    if (code < 0x0E00 || code > 0x0E7F) {
+      syllables.push(text[i]); i++; continue;
+    }
+    // Bắt đầu âm tiết mới
+    let syl = text[i]; i++;
+    // Thêm các dấu/สระ theo sau
+    while (i < text.length) {
+      const nc = text.charCodeAt(i);
+      if (nc < 0x0E00 || nc > 0x0E7F) break;
+      const ch = text[i];
+      if (THAI_VOWELS_ABOVE.has(ch) || THAI_VOWELS_BELOW.has(ch) ||
+          THAI_FINAL.has(ch) || ch === '์' || ch === 'ั' || ch === 'ื' ||
+          (THAI_CONSONANTS.has(ch) && i + 1 < text.length && 
+           (THAI_VOWELS_ABOVE.has(text[i+1]) || THAI_VOWELS_BELOW.has(text[i+1])))) {
+        syl += ch; i++;
+      } else {
+        break;
+      }
+    }
+    syllables.push(syl);
+  }
+  return syllables;
+}
+
+function segmentThai(text) {
+  if (!text.trim()) return [];
+  
+  // Build word set from dictionary (sort by length desc for greedy match)
+  const dictWords = allWords.map(w => w.thai).filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+  const dictSet = new Set(dictWords);
+
+  const result = [];
+  let i = 0;
+  const chars = [...text]; // handle unicode correctly
+
+  while (i < chars.length) {
+    const code = chars[i].charCodeAt(0);
+    
+    // Non-Thai: space or punctuation
+    if (code < 0x0E00 || code > 0x0E7F) {
+      if (chars[i] === ' ' || chars[i] === ' ') {
+        result.push({ thai: ' ', isSpace: true });
+      } else {
+        result.push({ thai: chars[i], isSpace: false });
+      }
+      i++; continue;
+    }
+
+    // Try longest match from dictionary
+    let matched = false;
+    for (let len = Math.min(20, chars.length - i); len >= 1; len--) {
+      const candidate = chars.slice(i, i + len).join('');
+      if (dictSet.has(candidate)) {
+        result.push({ thai: candidate, isSpace: false });
+        i += len; matched = true; break;
+      }
+    }
+
+    if (!matched) {
+      // Fallback: collect one syllable cluster
+      let syl = chars[i]; i++;
+      while (i < chars.length) {
+        const nc = chars[i].charCodeAt(0);
+        if (nc < 0x0E00 || nc > 0x0E7F) break;
+        const ch = chars[i];
+        if (THAI_VOWELS_ABOVE.has(ch) || THAI_VOWELS_BELOW.has(ch) ||
+            ch === '์' || ch === '่' || ch === '้' || ch === '๊' || ch === '๋' ||
+            ch === 'ั' || ch === 'ิ' || ch === 'ี' || ch === 'ึ' || ch === 'ื' ||
+            ch === 'ุ' || ch === 'ู' || ch === 'ํ' || ch === '็') {
+          syl += ch; i++;
+        } else { break; }
+      }
+      result.push({ thai: syl, isSpace: false });
+    }
+  }
+  return result;
+}
+
+function runPopthai() {
   const text = document.getElementById('popthaiInput').value.trim();
   if (!text) { showToast('⚠️ Vui lòng nhập đoạn văn bản Thái'); return; }
 
   const wordsEl = document.getElementById('popthaiWords');
   wordsEl.style.display = 'flex';
-  wordsEl.innerHTML = '<div style="padding:16px;color:var(--text-muted);font-size:14px">🤖 Đang tách từ...</div>';
   document.getElementById('ptDefPanel').classList.remove('show');
 
-  let segments = [];
-  try {
-    // Call Claude API to segment Thai text
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: 'Tách từ tiếng Thái sau thành từng từ riêng lẻ có nghĩa. Trả về JSON array các từ theo đúng thứ tự, không giải thích gì thêm. Ví dụ: ["รัก","ใคร","ก็","ได้"]. Văn bản: ' + text
-        }]
-      })
-    });
-    const data = await resp.json();
-    const raw = data.content && data.content[0] && data.content[0].text || '[]';
-    const cleaned = raw.replace(/```json|```/g, '').trim();
-    const words = JSON.parse(cleaned);
-    segments = words.map(w => ({ thai: w.trim(), isSpace: false }));
-  } catch(e) {
-    // Fallback: split by space only
-    segments = text.split(/\s+/).filter(Boolean).map(w => ({ thai: w, isSpace: false }));
-    showToast('⚠️ Dùng tách từ đơn giản (lỗi API)');
-  }
-
+  const segments = segmentThai(text);
   window._ptSegments = segments;
+
   wordsEl.innerHTML = segments.length ? segments.map((seg, idx) => {
-    if (seg.isSpace) return '';
+    if (seg.isSpace) return '<span style="width:12px;display:inline-block"></span>';
     const word = allWords.find(w => w.thai === seg.thai);
     const phonetic = word ? (word.phonetic || '') : '';
+    const hasDict = !!word;
     const phoneticHTML = phonetic ? '<span class="pt-word-phonetic">' + phonetic + '</span>' : '';
-    return '<span class="pt-word" id="ptw-' + idx + '" onclick="ptWordClick(' + idx + ')">'
+    return '<span class="pt-word' + (hasDict ? ' has-def' : '') + '" id="ptw-' + idx + '" onclick="ptWordClick(' + idx + ')">'
       + '<span class="pt-word-thai">' + seg.thai + '</span>'
       + phoneticHTML
       + '</span>';
