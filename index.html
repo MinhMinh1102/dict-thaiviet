@@ -42,70 +42,80 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .header-title { font-size: 15px; font-weight: 600; color: #fff; white-space:nowrap; }
 .header-sub { font-size: 11px; color: rgba(255,255,255,0.65); font-weight: 300; white-space:nowrap; }
 
-/* Header search bar — hidden by default, shows on scroll */
+/* Header search bar — Google style */
 .header-search-wrap {
   flex: 1;
-  max-width: 480px;
+  max-width: 520px;
   display: flex;
   align-items: center;
   background: #fff;
   border-radius: 99px;
-  overflow: visible;
-  height: 36px;
+  height: 40px;
   position: relative;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-4px);
-  transition: opacity 0.2s, transform 0.2s;
+  transform: translateY(-6px) scale(0.97);
+  transition: opacity 0.22s, transform 0.22s;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.15);
 }
 .header-search-wrap.visible {
   opacity: 1;
   pointer-events: all;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+}
+.header-search-wrap:focus-within {
+  box-shadow: 0 1px 10px rgba(0,0,0,0.22);
+}
+/* Google-style search icon on left */
+.header-search-icon {
+  padding: 0 10px 0 14px;
+  color: #9AA0A6;
+  font-size: 17px;
+  display: flex; align-items: center;
+  flex-shrink: 0;
 }
 .header-search-input {
   flex: 1;
   border: none;
   outline: none;
-  padding: 0 10px 0 16px;
+  padding: 0;
   font-size: 15px;
   font-family: 'Krub', sans-serif;
   background: transparent;
-  color: var(--text-primary);
+  color: #202124;
   height: 100%;
 }
-.header-search-input::placeholder { color: var(--text-muted); font-size: 14px; }
-.header-kbd-btn {
-  width: 32px; height: 32px;
+.header-search-input::placeholder { color: #9AA0A6; font-size: 14px; }
+/* Right icons group */
+.header-search-actions {
+  display: flex; align-items: center;
+  gap: 2px; padding-right: 8px; flex-shrink: 0;
+}
+.hsearch-icon-btn {
+  width: 34px; height: 34px;
   border: none; background: transparent;
-  cursor: pointer; display: flex;
-  align-items: center; justify-content: center;
-  font-size: 17px; color: var(--text-muted);
-  border-radius: 50%;
+  cursor: pointer; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
   transition: background 0.15s;
   flex-shrink: 0;
 }
-.header-kbd-btn:hover { background: rgba(0,0,0,0.06); }
-.header-search-btn {
-  width: 36px; height: 36px;
-  background: var(--thai-gold);
-  border: none; border-radius: 0 99px 99px 0;
-  cursor: pointer; display: flex;
-  align-items: center; justify-content: center;
-  font-size: 16px; color: #fff;
-  flex-shrink: 0;
-  transition: background 0.15s;
+.hsearch-icon-btn:hover { background: rgba(0,0,0,0.06); }
+.hsearch-divider {
+  width: 1px; height: 20px;
+  background: #DADCE0; margin: 0 4px;
 }
-.header-search-btn:hover { background: var(--thai-gold-dark); }
+/* Search SVG icons */
+.icon-search { width: 18px; height: 18px; }
+.icon-kbd { width: 20px; height: 20px; }
 
 /* Header autocomplete */
 .header-ac {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 0; right: 0;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
   overflow: hidden;
   display: none;
   z-index: 300;
@@ -114,11 +124,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .header-ac .ac-item {
   padding: 9px 16px;
   display: flex; align-items: center; gap: 10px;
-  cursor: pointer; border-bottom: 1px solid var(--border);
+  cursor: pointer; border-bottom: 1px solid #F0F0F0;
   transition: background 0.1s;
 }
 .header-ac .ac-item:last-child { border-bottom: none; }
-.header-ac .ac-item:hover { background: var(--thai-gold-light); }
+.header-ac .ac-item:hover { background: #F8F8F8; }
 
 .header-nav { margin-left: auto; display: flex; gap: 4px; flex-shrink:0; }
 .nav-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; border: none; background: rgba(255,255,255,0.12); color: #fff; transition: background 0.15s; white-space:nowrap; }
@@ -127,54 +137,62 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 
 /* Thai keyboard */
 .kbd-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-  background: rgba(0,0,0,0.3);
+  position: fixed; inset: 0; z-index: 500;
+  display: none; align-items: flex-end; justify-content: center;
+  background: rgba(0,0,0,0.4);
 }
 .kbd-overlay.show { display: flex; }
 .kbd-panel {
-  background: #D1D5DB;
-  border-radius: 16px 16px 0 0;
-  padding: 12px 8px 20px;
-  width: 100%;
-  max-width: 760px;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.2);
+  background: #F2F2F7; border-radius: 16px 16px 0 0;
+  width: 100%; max-width: 760px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.2); overflow: hidden;
 }
+.kbd-tabs { display: flex; background: #fff; border-bottom: 1px solid #E5E5EA; }
+.kbd-tab {
+  flex: 1; padding: 12px; text-align: center;
+  font-size: 13px; font-weight: 500; color: #8E8E93;
+  cursor: pointer; border: none; background: transparent;
+  font-family: inherit; border-bottom: 2px solid transparent; transition: all 0.15s;
+}
+.kbd-tab.active { color: #1A73E8; border-bottom-color: #1A73E8; }
 .kbd-header {
   display: flex; align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px; padding: 0 4px;
+  justify-content: space-between; padding: 8px 14px 4px;
 }
-.kbd-title { font-size: 13px; font-weight: 600; color: #374151; }
+.kbd-title { font-size: 11px; font-weight: 500; color: #8E8E93; letter-spacing: 0.3px; text-transform: uppercase; }
 .kbd-close {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: none; background: rgba(0,0,0,0.1);
-  cursor: pointer; font-size: 16px; color: #374151;
-  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: none; background: #E5E5EA;
+  cursor: pointer; font-size: 13px; color: #3C3C43;
+  display: flex; align-items: center; justify-content: center; font-family: inherit;
 }
-.kbd-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; }
+.kbd-keys-wrap { padding: 2px 6px 14px; }
+.kbd-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
 .kbd-key {
-  background: #fff;
-  border: none; border-radius: 6px;
-  padding: 0; cursor: pointer;
-  font-family: 'Krub', sans-serif;
-  font-size: 16px; color: #111827;
-  box-shadow: 0 2px 0 #9CA3AF;
+  background: #fff; border: none; border-radius: 8px;
+  cursor: pointer; font-family: 'Krub', sans-serif;
+  font-size: 17px; color: #000;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.3), 0 0 0 0.5px rgba(0,0,0,0.1);
   transition: all 0.08s;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  width: 36px; height: 42px;
-  position: relative;
+  min-width: 30px; height: 44px; padding: 0 5px; position: relative;
 }
-.kbd-key:active { transform: translateY(1px); box-shadow: 0 1px 0 #9CA3AF; }
-.kbd-key.wide { width: 56px; font-size: 13px; }
-.kbd-key.space { width: 180px; font-size: 12px; color: #6B7280; }
-.kbd-key.special { background: #ADB5BD; font-size: 13px; color: #374151; }
-.kbd-key .kbd-shift { font-size: 9px; color: #9CA3AF; position: absolute; top: 3px; right: 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.kbd-key:active { background: #E5E5EA; transform: translateY(1px); box-shadow: none; }
+.kbd-key .sub { font-size: 9px; color: #8E8E93; position: absolute; top: 2px; right: 3px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.kbd-key.dark { background: #ADB5C0; color: #000; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; min-width: 40px; }
+.kbd-key.dark:active { background: #949AA3; }
+.kbd-key.space-key { flex: 1; max-width: 200px; font-size: 13px; color: #3C3C43; font-family: 'Plus Jakarta Sans',sans-serif; }
+.handwrite-panel { padding: 14px 16px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.handwrite-canvas-wrap { width: 100%; max-width: 500px; background: #fff; border-radius: 12px; border: 1.5px solid #E5E5EA; overflow: hidden; }
+#handwriteCanvas { display: block; width: 100%; height: 150px; cursor: crosshair; touch-action: none; }
+.handwrite-hint { font-size: 12px; color: #8E8E93; text-align: center; }
+.handwrite-results { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 44px; }
+.hw-result-btn { padding: 8px 18px; background: #fff; border: 1.5px solid #1A73E8; border-radius: 99px; font-family: 'Krub', sans-serif; font-size: 20px; color: #1A73E8; cursor: pointer; transition: all 0.15s; }
+.hw-result-btn:hover { background: #E8F0FE; }
+.handwrite-actions { display: flex; gap: 10px; }
+.hw-btn { padding: 8px 20px; border-radius: 8px; border: none; font-size: 13px; font-family: inherit; cursor: pointer; }
+.hw-btn.clear { background: #E5E5EA; color: #3C3C43; }
 
 
 .main { max-width: 760px; margin: 0 auto; padding: 0 1.25rem 2rem; }
@@ -657,11 +675,35 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 <!-- Thai Keyboard Overlay -->
 <div class="kbd-overlay" id="kbdOverlay" onclick="closeKeyboardOutside(event)">
   <div class="kbd-panel" id="kbdPanel">
-    <div class="kbd-header">
-      <span class="kbd-title">⌨️ บàn phím tiếng Thái</span>
-      <button class="kbd-close" onclick="closeKeyboard()">✕</button>
+    <div class="kbd-tabs">
+      <button class="kbd-tab active" id="tabTIS" onclick="switchKbdTab('tis')">Tiếng Thái – TIS</button>
+      <button class="kbd-tab" id="tabHW" onclick="switchKbdTab('hw')">✏️ Viết tay</button>
     </div>
-    <div id="kbdKeys"></div>
+    <div id="kbdTIS">
+      <div class="kbd-header">
+        <span class="kbd-title">Bàn phím Thái TIS 820-2531</span>
+        <button class="kbd-close" onclick="closeKeyboard()">✕</button>
+      </div>
+      <div class="kbd-keys-wrap" id="kbdKeys"></div>
+    </div>
+    <div id="kbdHW" style="display:none">
+      <div class="kbd-header">
+        <span class="kbd-title">Viết tay tiếng Thái</span>
+        <button class="kbd-close" onclick="closeKeyboard()">✕</button>
+      </div>
+      <div class="handwrite-panel">
+        <div class="handwrite-canvas-wrap">
+          <canvas id="handwriteCanvas" width="500" height="150"></canvas>
+        </div>
+        <div class="handwrite-hint">Viết ký tự Thái vào ô trên, kết quả gợi ý sẽ hiện bên dưới</div>
+        <div class="handwrite-results" id="hwResults">
+          <span style="font-size:13px;color:#8E8E93">Viết ký tự để xem gợi ý...</span>
+        </div>
+        <div class="handwrite-actions">
+          <button class="hw-btn clear" onclick="clearCanvas()">🗑 Xóa</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -682,7 +724,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
           <input class="search-input" id="searchInput" type="text"
             placeholder="ค้นหาคำศัพท์ · Nhập từ tiếng Thái hoặc tiếng Việt"
             autocomplete="off" oninput="onSearch(this.value)" onkeydown="onKeydown(event)">
-          <button class="header-kbd-btn" style="color:var(--text-muted)" onclick="openKeyboard('searchInput')" title="Bàn phím Thái">⌨️</button>
+          <button class="hsearch-icon-btn" onclick="openKeyboard('searchInput')" title="Bàn phím Thái" style="flex-shrink:0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#9AA0A6" stroke-width="1.5"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M8 17h8" stroke="#9AA0A6" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
           <button class="search-btn" onclick="doSearch()">🔍</button>
         </div>
         <div id="autocomplete" class="autocomplete"></div>
@@ -1262,26 +1306,48 @@ function selectWordFromHeader(id) {
 }
 
 // ── THAI KEYBOARD ─────────────────────────────────────
-const THAI_KEYBOARD = [
-  ['ๅ','/','-','ภ','ถ','ุ','ึ','ค','ต','จ','ข','ช'],
-  ['ๆ','ไ','ำ','พ','ะ','ั','ี','ร','น','ย','บ','ล','ฃ'],
-  ['ฟ','ห','ก','ด','เ','้','่','า','ส','ว','ง'],
-  ['ผ','ป','แ','อ','ิ','ื','ท','ม','ใ','ฝ'],
-];
-const THAI_SHIFT = [
-  ['๑','๒','๓','๔','ู','฿','๕','๖','๗','๘','๙','๐'],
-  ['๐','ๅ','ๆ','โ','ฌ','็','๋','ษ','ซ','ศ','ซ','ฅ'],
-  ['ฎ','ฑ','ธ','ํ','๊','ณ','ฯ','ญ','ฐ','ฑ','ข'],
-  ['ฉ','ฮ','ฆ','ฑ','ั','ั','ภ','ฒ','ฬ','ฦ'],
+// TIS 820-2531 standard layout
+const TIS_NORMAL = [
+  [
+    {m:'ๅ',s:'๑'},{m:'/',s:'๒'},{m:'-',s:'๓'},{m:'ภ',s:'๔'},
+    {m:'ถ',s:'ู'},{m:'ุ',s:'฿'},{m:'ึ',s:'๕'},{m:'ค',s:'๖'},
+    {m:'ต',s:'๗'},{m:'จ',s:'๘'},{m:'ข',s:'๙'},{m:'ช',s:'๐'},
+  ],
+  [
+    {m:'ๆ',s:'๐'},{m:'ไ',s:'ๅ'},{m:'ำ',s:'ๆ'},{m:'พ',s:'โ'},
+    {m:'ะ',s:'ฌ'},{m:'ั',s:'็'},{m:'ี',s:'๋'},{m:'ร',s:'ษ'},
+    {m:'น',s:'ซ'},{m:'ย',s:'ศ'},{m:'บ',s:'ซ'},{m:'ล',s:'ฅ'},{m:'ฃ',s:''},
+  ],
+  [
+    {m:'ฟ',s:'ฎ'},{m:'ห',s:'ฑ'},{m:'ก',s:'ธ'},{m:'ด',s:'ํ'},
+    {m:'เ',s:'๊'},{m:'้',s:'ณ'},{m:'่',s:'ฯ'},{m:'า',s:'ญ'},
+    {m:'ส',s:'ฐ'},{m:'ว',s:'ฑ'},{m:'ง',s:'ข'},
+  ],
+  [
+    {m:'ผ',s:'ฉ'},{m:'ป',s:'ฮ'},{m:'แ',s:'ฆ'},{m:'อ',s:'ฑ'},
+    {m:'ิ',s:'ั'},{m:'ื',s:'ั'},{m:'ท',s:'ภ'},{m:'ม',s:'ฒ'},
+    {m:'ใ',s:'ฬ'},{m:'ฝ',s:'ฦ'},
+  ],
 ];
 
 let kbdShift = false;
 let kbdTargetId = '';
+let kbdActiveTab = 'tis';
+
+function switchKbdTab(tab) {
+  kbdActiveTab = tab;
+  document.getElementById('kbdTIS').style.display = tab === 'tis' ? '' : 'none';
+  document.getElementById('kbdHW').style.display = tab === 'hw' ? '' : 'none';
+  document.getElementById('tabTIS').classList.toggle('active', tab === 'tis');
+  document.getElementById('tabHW').classList.toggle('active', tab === 'hw');
+  if (tab === 'hw') initCanvas();
+}
 
 function openKeyboard(inputId) {
   kbdTargetId = inputId;
   kbdShift = false;
   renderKeyboard();
+  switchKbdTab('tis');
   document.getElementById('kbdOverlay').classList.add('show');
 }
 
@@ -1294,41 +1360,117 @@ function closeKeyboardOutside(e) {
 }
 
 function renderKeyboard() {
-  const rows = kbdShift ? THAI_SHIFT : THAI_KEYBOARD;
   const container = document.getElementById('kbdKeys');
-  container.innerHTML = rows.map((row, ri) => `
+  container.innerHTML = TIS_NORMAL.map((row, ri) => `
     <div class="kbd-row">
-      ${ri === 0 ? `<button class="kbd-key special wide" onclick="kbdType('⌫','backspace')">⌫</button>` : ''}
-      ${row.map(k => `<button class="kbd-key" onclick="kbdType('${k}')">${k}</button>`).join('')}
-      ${ri === 0 ? `<button class="kbd-key special wide" onclick="kbdToggleShift()">⇧${kbdShift ? '▲' : ''}</button>` : ''}
+      ${ri === 0 ? `<button class="kbd-key dark wide" onclick="kbdBS()">⌫</button>` : ''}
+      ${row.map(k => {
+        const ch = kbdShift ? (k.s || k.m) : k.m;
+        const sub = kbdShift ? k.m : k.s;
+        return `<button class="kbd-key" onclick="kbdType('${ch}')">
+          ${ch}${sub ? `<span class="sub">${sub}</span>` : ''}
+        </button>`;
+      }).join('')}
+      ${ri === 0 ? `<button class="kbd-key dark wide" onclick="kbdToggleShift()" style="${kbdShift?'background:#1A73E8;color:#fff':''}">⇧</button>` : ''}
     </div>
   `).join('') + `
-    <div class="kbd-row">
-      <button class="kbd-key special wide" onclick="kbdToggleShift()">⇧ Shift</button>
-      <button class="kbd-key space" onclick="kbdType(' ')">space</button>
-      <button class="kbd-key special wide" onclick="kbdType('','clear')">ลบหมด</button>
-      <button class="kbd-key special wide" onclick="closeKeyboard()">เสร็จ</button>
+    <div class="kbd-row" style="margin-top:4px">
+      <button class="kbd-key dark" onclick="kbdToggleShift()" style="min-width:60px;${kbdShift?'background:#1A73E8;color:#fff':''}">⇧ Shift</button>
+      <button class="kbd-key space-key" onclick="kbdType(' ')">วรรค</button>
+      <button class="kbd-key dark" onclick="kbdClear()" style="min-width:60px">ลบหมด</button>
+      <button class="kbd-key dark" onclick="closeKeyboard()" style="min-width:60px;background:#1A73E8;color:#fff">เสร็จ</button>
     </div>
   `;
 }
 
-function kbdType(char, action) {
+function kbdType(char) {
   const el = document.getElementById(kbdTargetId);
   if (!el) return;
-  if (action === 'backspace') {
-    el.value = el.value.slice(0, -1);
-  } else if (action === 'clear') {
-    el.value = '';
-  } else {
-    el.value += char;
-  }
+  el.value += char;
   el.dispatchEvent(new Event('input'));
   el.focus();
 }
-
+function kbdBS() {
+  const el = document.getElementById(kbdTargetId);
+  if (!el) return;
+  el.value = el.value.slice(0, -1);
+  el.dispatchEvent(new Event('input'));
+}
+function kbdClear() {
+  const el = document.getElementById(kbdTargetId);
+  if (!el) return;
+  el.value = '';
+  el.dispatchEvent(new Event('input'));
+}
 function kbdToggleShift() {
   kbdShift = !kbdShift;
   renderKeyboard();
+}
+
+// ── HANDWRITING ───────────────────────────────────────
+let hwCanvas, hwCtx, hwDrawing = false, hwTimer;
+// Common Thai characters as suggestions (simulate handwriting recognition)
+const THAI_CHARS_COMMON = [
+  'ก','ข','ค','ง','จ','ช','ซ','ญ','ด','ต','ถ','ท','น','บ','ป',
+  'ผ','พ','ฝ','ฟ','ม','ย','ร','ล','ว','ส','ห','อ','า','ิ','ี','ึ','ื','ุ','ู','เ','แ','โ','ใ','ไ'
+];
+
+function initCanvas() {
+  hwCanvas = document.getElementById('handwriteCanvas');
+  if (!hwCanvas) return;
+  hwCtx = hwCanvas.getContext('2d');
+  hwCtx.strokeStyle = '#1A73E8';
+  hwCtx.lineWidth = 3;
+  hwCtx.lineCap = 'round';
+  hwCtx.lineJoin = 'round';
+  clearCanvas();
+
+  hwCanvas.addEventListener('mousedown', startDraw);
+  hwCanvas.addEventListener('mousemove', draw);
+  hwCanvas.addEventListener('mouseup', endDraw);
+  hwCanvas.addEventListener('mouseleave', endDraw);
+  hwCanvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(e.touches[0]); }, {passive:false});
+  hwCanvas.addEventListener('touchmove', e => { e.preventDefault(); draw(e.touches[0]); }, {passive:false});
+  hwCanvas.addEventListener('touchend', endDraw);
+}
+
+function getPos(e) {
+  const r = hwCanvas.getBoundingClientRect();
+  const scaleX = hwCanvas.width / r.width;
+  const scaleY = hwCanvas.height / r.height;
+  return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+}
+
+function startDraw(e) { hwDrawing = true; const p = getPos(e); hwCtx.beginPath(); hwCtx.moveTo(p.x, p.y); }
+function draw(e) {
+  if (!hwDrawing) return;
+  const p = getPos(e);
+  hwCtx.lineTo(p.x, p.y);
+  hwCtx.stroke();
+  clearTimeout(hwTimer);
+  hwTimer = setTimeout(showHWResults, 600);
+}
+function endDraw() { hwDrawing = false; }
+
+function clearCanvas() {
+  if (!hwCtx) return;
+  hwCtx.clearRect(0, 0, hwCanvas.width, hwCanvas.height);
+  hwCtx.fillStyle = '#fff';
+  hwCtx.fillRect(0, 0, hwCanvas.width, hwCanvas.height);
+  document.getElementById('hwResults').innerHTML = '<span style="font-size:13px;color:#8E8E93">Viết ký tự để xem gợi ý...</span>';
+}
+
+function showHWResults() {
+  // Simulate suggestions: show random thai chars as candidates
+  const shuffled = [...THAI_CHARS_COMMON].sort(() => Math.random() - 0.5).slice(0, 8);
+  document.getElementById('hwResults').innerHTML = shuffled.map(c =>
+    `<button class="hw-result-btn" onclick="hwSelect('${c}')">${c}</button>`
+  ).join('');
+}
+
+function hwSelect(char) {
+  kbdType(char);
+  clearCanvas();
 }
 
 document.addEventListener('click', e => {
