@@ -340,7 +340,7 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
 .result-section { display: none; }
 .result-section.show { display: block; }
 
-.result-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
+.result-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 1rem; }
 .result-top { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .word-thai-wrap {
   display: flex;
@@ -387,11 +387,10 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
 /* Definition accordion */
 .def-block {
   border-top: 1px solid var(--border);
-  overflow: hidden;
 }
 .def-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   padding: 12px 1.5rem;
   cursor: pointer;
@@ -427,18 +426,17 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
 .def-summary { flex: 1; min-width: 0; }
 .def-thai-meaning {
   font-family: 'Kodchasan', sans-serif;
-  font-size: 14px; color: #6B3FA0;
-  line-height: 1.4;
+  font-size: 15px; color: #6B3FA0;
+  line-height: 1.5;
 }
 .def-viet-meaning {
-  font-size: 13px; color: var(--text-secondary);
-  margin-top: 2px; line-height: 1.4;
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 14px; color: var(--text-secondary);
+  margin-top: 3px; line-height: 1.5;
 }
 .def-body {
   display: none;
-  padding: 0 1.5rem 14px 1.5rem;
-  background: #FDFAF5;
-  border-top: 1px dashed var(--border);
+  padding: 4px 1.5rem 14px 3.5rem;
 }
 .def-block.open .def-body { display: block; }
 .def-ex-label {
@@ -459,11 +457,14 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
 .def-ex-thai {
   font-family: 'Kodchasan', sans-serif;
   font-size: 14px; color: #6B3FA0;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin-bottom: 2px;
 } /* fixed */
 .def-ex-viet {
+  font-family: 'Kodchasan', sans-serif;
   font-size: 13px; color: var(--text-secondary);
-  margin-top: 2px; line-height: 1.4;
+  margin-top: 2px; line-height: 1.5;
+  padding-left: 20px;
 }
 
 .result-examples { padding: 1.25rem 1.5rem; background: #FDF8EF; }
@@ -625,6 +626,7 @@ body { transition: background 0.2s, color 0.2s; }
   min-height: 28px;
 }
 .quote-author {
+  font-family: 'Kodchasan', sans-serif;
   font-size: 13px;
   color: var(--text-muted);
   margin-top: 10px;
@@ -1365,44 +1367,37 @@ function showResult(word) {
   const defEl = document.getElementById('rDefinitions');
   if (defs.length) {
     defEl.innerHTML = defs.map((def, i) => {
-      const exHTML = (def.examples || []).map((ex, j) => `
-        <div class="def-ex-item">
-          <div class="def-ex-num">${THAI_NUMS_DEF[j] || j+1} ${j+1}.</div>
-          <div class="def-ex-thai">${ex.thai || ''}</div>
-          <div class="def-ex-viet">${ex.viet || ''}</div>
-        </div>
-      `).join('');
-      return `
-        <div class="def-block${i===0?' open':''}">
-          <div class="def-header" onclick="toggleDef(this)">
-            <div class="def-toggle">${i===0?'−':'+'}</div>
-            <span class="def-num-thai">${THAI_NUMS_DEF[i]||i+1}</span>
-            <span class="def-num-arab">${i+1}.</span>
-            ${def.type ? `<span class="def-type">${def.type}</span>` : ''}
-            <div class="def-summary">
-              <div class="def-thai-meaning">${def.thai_meaning || ''}</div>
-              <div class="def-viet-meaning">${def.viet_meaning || ''}</div>
-            </div>
-          </div>
-          ${exHTML ? `<div class="def-body">${exHTML}</div>` : ''}
-        </div>
-      `;
+      const examples = def.examples || [];
+      const exHTML = examples.map((ex, j) => {
+        const thaiLine = ex.thai ? '<div class="def-ex-thai">' + (THAI_NUMS_DEF[j]||j+1) + ' ' + (j+1) + '. ' + ex.thai + '</div>' : '';
+        const vietLine = ex.viet ? '<div class="def-ex-viet">' + ex.viet + '</div>' : '';
+        return '<div class="def-ex-item">' + thaiLine + vietLine + '</div>';
+      }).join('');
+      return '<div class="def-block' + (i===0?' open':'') + '">'
+        + '<div class="def-header" onclick="toggleDef(this)">'
+        + '<div class="def-toggle">' + (i===0?'−':'+') + '</div>'
+        + '<span class="def-num-thai">' + (THAI_NUMS_DEF[i]||i+1) + '</span>'
+        + '<span class="def-num-arab">' + (i+1) + '.</span>'
+        + (def.type ? '<span class="def-type">' + def.type + '</span>' : '')
+        + '<div class="def-summary">'
+        + '<div class="def-thai-meaning">' + (def.thai_meaning || '') + '</div>'
+        + '<div class="def-viet-meaning">' + (def.viet_meaning || '') + '</div>'
+        + '</div></div>'
+        + (exHTML ? '<div class="def-body">' + exHTML + '</div>' : '')
+        + '</div>';
     }).join('');
   } else {
     // fallback: show old meanings format
     const meanings = word.meanings || [];
-    defEl.innerHTML = meanings.map((m, i) => `
-      <div class="def-block${i===0?' open':''}">
-        <div class="def-header" onclick="toggleDef(this)">
-          <div class="def-toggle">${i===0?'−':'+'}</div>
-          <span class="def-num-thai">${THAI_NUMS_DEF[i]||i+1}</span>
-          <span class="def-num-arab">${i+1}.</span>
-          <div class="def-summary">
-            <div class="def-viet-meaning">${m}</div>
-          </div>
-        </div>
-      </div>
-    `).join('');
+    defEl.innerHTML = meanings.map((m, i) => {
+      return '<div class="def-block' + (i===0?' open':'') + '">'
+        + '<div class="def-header" onclick="toggleDef(this)">'
+        + '<div class="def-toggle">' + (i===0?'−':'+') + '</div>'
+        + '<span class="def-num-thai">' + (THAI_NUMS_DEF[i]||i+1) + '</span>'
+        + '<span class="def-num-arab">' + (i+1) + '.</span>'
+        + '<div class="def-summary"><div class="def-viet-meaning">' + m + '</div></div>'
+        + '</div></div>';
+    }).join('');
   }
 
   const related = allWords.filter(w => w.id !== word.id && w.type === word.type).slice(0, 6);
