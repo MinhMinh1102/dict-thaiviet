@@ -148,40 +148,34 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .word-thai-wrap {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
   margin-bottom: 4px;
 }
 .word-thai-mitr {
   font-family: 'Mitr', sans-serif;
-  font-size: 32px; font-weight: 600;
+  font-size: 30px; font-weight: 300;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.3;
   text-align: left;
+  word-break: break-word;
 }
 .word-thai-sriracha {
   font-family: 'Sriracha', cursive;
-  font-size: 32px; font-weight: 400;
+  font-size: 30px; font-weight: 400;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.3;
   text-align: center;
-  flex: 1;
+  word-break: break-word;
 }
 .word-thai-charmonman {
   font-family: 'Charmonman', cursive;
-  font-size: 32px; font-weight: 700;
+  font-size: 30px; font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.3;
   text-align: right;
-}
-.word-font-label {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-weight: 400;
-  display: block;
-  margin-top: 2px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  word-break: break-word;
 }
 .word-phonetic { font-size: 14px; color: var(--text-muted); margin-top: 3px; font-style: italic; }
 .word-type { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 99px; background: var(--thai-gold-light); color: var(--thai-gold-dark); }
@@ -190,16 +184,139 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
 .btn-action:hover { background: var(--thai-gold-light); border-color: var(--thai-gold); }
 .btn-action.active { background: var(--thai-gold-light); border-color: var(--thai-gold); }
 
-.result-meanings { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
-.section-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
-.meaning-row { display: flex; gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(232,223,200,0.5); }
-.meaning-row:last-child { border-bottom: none; }
-.meaning-num { width: 22px; height: 22px; background: var(--thai-gold); color: #fff; font-size: 11px; font-weight: 600; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.meaning-text { font-size: 16px; color: var(--text-primary); }
+.result-meanings { padding: 0; }
+.section-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; padding: 1.25rem 1.5rem 0; }
+
+/* Definition accordion */
+.def-block {
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+.def-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.def-header:hover { background: var(--surface); }
+.def-toggle {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--thai-gold-light);
+  color: var(--thai-gold-dark);
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s;
+}
+.def-block.open .def-toggle { background: var(--thai-red); color: #fff; }
+.def-num-thai {
+  font-family: 'Krub', sans-serif;
+  font-size: 13px; font-weight: 600;
+  color: var(--thai-red);
+  min-width: 18px;
+}
+.def-num-arab {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-muted);
+}
+.def-type {
+  font-size: 11px; font-weight: 600;
+  padding: 2px 9px; border-radius: 99px;
+  background: var(--thai-gold-light); color: var(--thai-gold-dark);
+}
+.def-summary { flex: 1; min-width: 0; }
+.def-thai-meaning {
+  font-family: 'Krub', sans-serif;
+  font-size: 14px; color: #6B3FA0;
+  line-height: 1.4;
+}
+.def-viet-meaning {
+  font-size: 13px; color: var(--text-secondary);
+  margin-top: 2px; line-height: 1.4;
+}
+.def-body {
+  display: none;
+  padding: 0 1.5rem 14px 1.5rem;
+  background: #FDFAF5;
+  border-top: 1px dashed var(--border);
+}
+.def-block.open .def-body { display: block; }
+.def-ex-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin: 12px 0 8px;
+}
+.def-ex-item {
+  margin-bottom: 10px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.def-ex-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.def-ex-num {
+  font-family: 'Krub', sans-serif;
+  font-size: 11px; color: var(--thai-red);
+  font-weight: 600; margin-bottom: 2px;
+}
+.def-ex-thai {
+  font-family: 'Krub', sans-serif;
+  font-size: 14px; color: #6B3FA0;
+  line-height: 1.5;
+}
+.def-ex-viet {
+  font-size: 13px; color: var(--text-secondary);
+  margin-top: 2px; line-height: 1.4;
+}
 
 .result-examples { padding: 1.25rem 1.5rem; background: #FDF8EF; }
 .example-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
 .example-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+/* Rich text editor toolbar */
+.rte-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.rte-toolbar {
+  display: flex; gap: 2px; padding: 6px 8px;
+  background: #F0EBE0; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.rte-btn {
+  width: 28px; height: 28px; border-radius: 5px;
+  border: none; background: transparent;
+  cursor: pointer; font-size: 13px; font-weight: 700;
+  color: var(--text-secondary); display: flex;
+  align-items: center; justify-content: center;
+  transition: background 0.1s;
+}
+.rte-btn:hover { background: var(--border); }
+.rte-btn.active { background: var(--thai-gold-light); color: var(--thai-gold-dark); }
+.rte-sep { width: 1px; background: var(--border); margin: 2px 4px; }
+.rte-area {
+  min-height: 70px; padding: 10px 12px;
+  font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif;
+  outline: none; line-height: 1.6;
+  color: var(--text-primary);
+}
+.rte-area[data-lang="thai"] { font-family: 'Krub', sans-serif; }
+
+/* Admin def builder */
+.def-builder {
+  border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; margin-bottom: 12px; background: var(--surface-card);
+}
+.def-builder-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: #F5EFE0;
+  border-bottom: 1px solid var(--border);
+}
+.def-builder-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); flex: 1; }
+.def-builder-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.def-ex-builder { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-top: 4px; }
+.def-ex-builder-title { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+.ex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.ex-row:last-child { margin-bottom: 0; }
+.btn-add-ex { font-size: 12px; color: var(--thai-gold-dark); background: var(--thai-gold-light); border: none; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-family: inherit; }
+.btn-remove { width: 26px; height: 26px; border-radius: 5px; border: none; background: #FFE8E8; color: #C0392B; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
 .ex-thai { font-family: 'Krub', sans-serif; font-size: 15px; color: var(--text-primary); margin-bottom: 2px; }
 .ex-viet { font-size: 13px; color: var(--text-secondary); }
 
@@ -424,12 +541,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
           </div>
         </div>
         <div class="result-meanings">
-          <div class="section-label">Nghĩa tiếng Việt</div>
-          <div id="rMeanings"></div>
-        </div>
-        <div class="result-examples" id="rExamplesWrap">
-          <div class="section-label">Ví dụ câu</div>
-          <div id="rExamples"></div>
+          <div class="section-label">Định nghĩa</div>
+          <div id="rDefinitions"></div>
         </div>
       </div>
       <div class="related-section">
@@ -496,29 +609,13 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--surface);
           <label class="form-label">Phiên âm</label>
           <input class="form-input" id="fPhonetic" placeholder="sa-wàt-dee">
         </div>
-        <div class="form-group">
-          <label class="form-label">Loại từ</label>
-          <select class="form-select" id="fType">
-            <option value="danh từ">Danh từ</option>
-            <option value="động từ">Động từ</option>
-            <option value="tính từ">Tính từ</option>
-            <option value="thán từ">Thán từ</option>
-            <option value="trạng từ">Trạng từ</option>
-            <option value="giới từ">Giới từ</option>
-            <option value="liên từ">Liên từ</option>
-            <option value="đại từ">Đại từ</option>
-            <option value="thành ngữ">Thành ngữ</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Nghĩa tiếng Việt * (cách nhau bằng dấu phẩy)</label>
-          <input class="form-input" id="fMeaning" placeholder="Xin chào, Tạm biệt">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">Ví dụ câu (Thái | Việt — mỗi dòng một câu)</label>
-          <textarea class="form-textarea" id="fExamples" placeholder="สวัสดีครับ | Xin chào&#10;ลาก่อนนะ | Tạm biệt nhé"></textarea>
-        </div>
       </div>
+
+      <!-- Definition builder -->
+      <div class="form-label" style="margin-bottom:8px">Định nghĩa * <span style="font-weight:400;color:var(--text-muted)">(có thể thêm nhiều định nghĩa)</span></div>
+      <div id="defBuilderList"></div>
+      <button type="button" onclick="addDefBlock()" style="width:100%;padding:9px;border:1.5px dashed var(--border);border-radius:8px;background:transparent;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:inherit;margin-bottom:12px">+ Thêm định nghĩa</button>
+
       <button class="btn-submit" id="btnAdd" onclick="addWord()">Thêm từ vào từ điển</button>
     </div>
 
@@ -681,36 +778,68 @@ function selectWord(id) {
   addRecent(word);
 }
 
+const THAI_NUMS_DEF = ['๑','๒','๓','๔','๕','๖','๗','๘','๙','๑๐'];
+
+function toggleDef(el) {
+  el.closest('.def-block').classList.toggle('open');
+  const tog = el.querySelector('.def-toggle');
+  tog.textContent = el.closest('.def-block').classList.contains('open') ? '−' : '+';
+}
+
 function showResult(word) {
   const t = word.thai;
   document.getElementById('rThai').innerHTML = `
-    <div style="text-align:left">
-      <span class="word-thai-mitr">${t}</span>
-      <span class="word-font-label">Mitr</span>
-    </div>
-    <div style="text-align:center;flex:1">
-      <span class="word-thai-sriracha">${t}</span>
-      <span class="word-font-label">Sriracha</span>
-    </div>
-    <div style="text-align:right">
-      <span class="word-thai-charmonman">${t}</span>
-      <span class="word-font-label">Charmonman</span>
-    </div>
+    <div style="text-align:left;flex:1;min-width:0"><span class="word-thai-mitr">${t}</span></div>
+    <div style="text-align:center;flex:1;min-width:0"><span class="word-thai-sriracha">${t}</span></div>
+    <div style="text-align:right;flex:1;min-width:0"><span class="word-thai-charmonman">${t}</span></div>
   `;
   document.getElementById('rPhonetic').textContent = word.phonetic || '';
-  document.getElementById('rType').textContent = word.type || '';
-  document.getElementById('rMeanings').innerHTML = (word.meanings || []).map((m, i) =>
-    `<div class="meaning-row"><div class="meaning-num">${i+1}</div><div class="meaning-text">${m}</div></div>`
-  ).join('');
+  document.getElementById('rType').textContent = '';
 
-  const exWrap = document.getElementById('rExamplesWrap');
-  const examples = word.examples || [];
-  if (examples.length) {
-    exWrap.style.display = 'block';
-    document.getElementById('rExamples').innerHTML = examples.map(ex =>
-      `<div class="example-item"><div class="ex-thai">${ex.thai}</div><div class="ex-viet">${ex.viet}</div></div>`
-    ).join('');
-  } else { exWrap.style.display = 'none'; }
+  // Render definitions accordion
+  const defs = word.definitions || [];
+  const defEl = document.getElementById('rDefinitions');
+  if (defs.length) {
+    defEl.innerHTML = defs.map((def, i) => {
+      const exHTML = (def.examples || []).map((ex, j) => `
+        <div class="def-ex-item">
+          <div class="def-ex-num">${THAI_NUMS_DEF[j] || j+1} ${j+1}.</div>
+          <div class="def-ex-thai">${ex.thai || ''}</div>
+          <div class="def-ex-viet">${ex.viet || ''}</div>
+        </div>
+      `).join('');
+      return `
+        <div class="def-block${i===0?' open':''}">
+          <div class="def-header" onclick="toggleDef(this)">
+            <div class="def-toggle">${i===0?'−':'+'}</div>
+            <span class="def-num-thai">${THAI_NUMS_DEF[i]||i+1}</span>
+            <span class="def-num-arab">${i+1}.</span>
+            ${def.type ? `<span class="def-type">${def.type}</span>` : ''}
+            <div class="def-summary">
+              <div class="def-thai-meaning">${def.thai_meaning || ''}</div>
+              <div class="def-viet-meaning">${def.viet_meaning || ''}</div>
+            </div>
+          </div>
+          ${exHTML ? `<div class="def-body"><div class="def-ex-label">Ví dụ câu</div>${exHTML}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  } else {
+    // fallback: show old meanings format
+    const meanings = word.meanings || [];
+    defEl.innerHTML = meanings.map((m, i) => `
+      <div class="def-block${i===0?' open':''}">
+        <div class="def-header" onclick="toggleDef(this)">
+          <div class="def-toggle">${i===0?'−':'+'}</div>
+          <span class="def-num-thai">${THAI_NUMS_DEF[i]||i+1}</span>
+          <span class="def-num-arab">${i+1}.</span>
+          <div class="def-summary">
+            <div class="def-viet-meaning">${m}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
 
   const related = allWords.filter(w => w.id !== word.id && w.type === word.type).slice(0, 6);
   document.getElementById('relatedGrid').innerHTML = related.map(w =>
@@ -821,45 +950,34 @@ function goToWord(id) { showPage('home'); selectWord(id); }
 async function addWord() {
   const thai = document.getElementById('fThai').value.trim();
   const phonetic = document.getElementById('fPhonetic').value.trim();
-  const type = document.getElementById('fType').value;
-  const meaningRaw = document.getElementById('fMeaning').value.trim();
-  const exRaw = document.getElementById('fExamples').value.trim();
+  if (!thai) { showToast('⚠️ Vui lòng nhập từ tiếng Thái'); return; }
 
-  if (!thai || !meaningRaw) { showToast('⚠️ Vui lòng nhập từ Thái và nghĩa'); return; }
+  const definitions = getDefData();
+  if (!definitions.length) { showToast('⚠️ Vui lòng thêm ít nhất 1 định nghĩa'); return; }
 
-  const meanings = meaningRaw.split(',').map(m => m.trim()).filter(Boolean);
-  const examples = exRaw ? exRaw.split('\n').map(line => {
-    const parts = line.split('|');
-    if (parts.length >= 2) return { thai: parts[0].trim(), viet: parts[1].trim() };
-    return null;
-  }).filter(Boolean) : [];
+  // Fallback meanings for backward compat
+  const meanings = definitions.map(d => d.viet_meaning.replace(/<[^>]+>/g,'') || d.thai_meaning.replace(/<[^>]+>/g,''));
+  const type = definitions[0]?.type || 'danh từ';
 
   const btn = document.getElementById('btnAdd');
-  btn.disabled = true;
-  btn.textContent = 'Đang lưu...';
+  btn.disabled = true; btn.textContent = 'Đang lưu...';
 
   try {
-    const result = await sbPost('words', { thai, phonetic: phonetic || null, type, meanings, examples });
+    const result = await sbPost('words', { thai, phonetic: phonetic || null, type, meanings, definitions, examples: [] });
     if (result && result[0]) {
-      const newWord = { ...result[0], meanings, examples };
-      allWords.push(newWord);
+      allWords.push({ ...result[0], meanings, definitions, examples: [] });
       allWords.sort((a,b) => a.thai.localeCompare(b.thai));
       document.getElementById('fThai').value = '';
       document.getElementById('fPhonetic').value = '';
-      document.getElementById('fMeaning').value = '';
-      document.getElementById('fExamples').value = '';
+      document.getElementById('defBuilderList').innerHTML = '';
+      defBlocks = [];
       showToast('✅ Đã thêm từ: ' + thai);
       updateStats();
       renderAdminList(allWords);
-    } else {
-      showToast('⚠️ Lỗi khi thêm từ, thử lại');
-    }
-  } catch(e) {
-    showToast('⚠️ Lỗi kết nối');
-  }
+    } else { showToast('⚠️ Lỗi khi thêm từ'); }
+  } catch(e) { showToast('⚠️ Lỗi kết nối'); }
 
-  btn.disabled = false;
-  btn.textContent = 'Thêm từ vào từ điển';
+  btn.disabled = false; btn.textContent = 'Thêm từ vào từ điển';
 }
 
 async function deleteWord(id) {
@@ -977,6 +1095,123 @@ function updateClock() {
 
 updateClock();
 setInterval(updateClock, 1000);
+
+// ── DEF BUILDER ───────────────────────────────────────
+const WORD_TYPES = ['Danh từ','Động từ','Tính từ','Thán từ','Trạng từ','Giới từ','Liên từ','Đại từ','Thành ngữ'];
+let defBlocks = [];
+let defIdCounter = 0;
+
+function addDefBlock() {
+  const id = defIdCounter++;
+  defBlocks.push(id);
+  const list = document.getElementById('defBuilderList');
+  const div = document.createElement('div');
+  div.className = 'def-builder';
+  div.id = 'def-' + id;
+  div.innerHTML = `
+    <div class="def-builder-header">
+      <span class="def-builder-title">Định nghĩa ${defBlocks.indexOf(id)+1}</span>
+      <select style="padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;background:var(--surface);outline:none" id="dtype-${id}">
+        ${WORD_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('')}
+      </select>
+      <button class="btn-remove" onclick="removeDefBlock(${id})" title="Xóa">✕</button>
+    </div>
+    <div class="def-builder-body">
+      <div class="form-group">
+        <label class="form-label">Định nghĩa tiếng Thái</label>
+        <div class="rte-wrap">
+          <div class="rte-toolbar">
+            <button class="rte-btn" onclick="rteCmd('bold',this)" title="Bold"><b>B</b></button>
+            <button class="rte-btn" onclick="rteCmd('italic',this)" title="Italic"><i>I</i></button>
+            <button class="rte-btn" onclick="rteCmd('underline',this)" title="Underline"><u>U</u></button>
+          </div>
+          <div class="rte-area" data-lang="thai" contenteditable="true" id="dthai-${id}" placeholder="กรอกความหมายภาษาไทย..."></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Định nghĩa tiếng Việt</label>
+        <div class="rte-wrap">
+          <div class="rte-toolbar">
+            <button class="rte-btn" onclick="rteCmd('bold',this)" title="Bold"><b>B</b></button>
+            <button class="rte-btn" onclick="rteCmd('italic',this)" title="Italic"><i>I</i></button>
+            <button class="rte-btn" onclick="rteCmd('underline',this)" title="Underline"><u>U</u></button>
+          </div>
+          <div class="rte-area" contenteditable="true" id="dviet-${id}" placeholder="Nhập nghĩa tiếng Việt..."></div>
+        </div>
+      </div>
+      <div class="def-ex-builder">
+        <div class="def-ex-builder-title">Ví dụ câu</div>
+        <div id="exlist-${id}"></div>
+        <button class="btn-add-ex" onclick="addExRow(${id})">+ Thêm ví dụ</button>
+      </div>
+    </div>
+  `;
+  list.appendChild(div);
+  addExRow(id);
+}
+
+function removeDefBlock(id) {
+  defBlocks = defBlocks.filter(b => b !== id);
+  document.getElementById('def-' + id)?.remove();
+}
+
+let exCounter = 0;
+function addExRow(defId) {
+  const eid = exCounter++;
+  const list = document.getElementById('exlist-' + defId);
+  const row = document.createElement('div');
+  row.className = 'ex-row';
+  row.id = 'ex-' + eid;
+  row.innerHTML = `
+    <div class="rte-wrap">
+      <div class="rte-toolbar">
+        <button class="rte-btn" onclick="rteCmd('bold',this)"><b>B</b></button>
+        <button class="rte-btn" onclick="rteCmd('italic',this)"><i>I</i></button>
+      </div>
+      <div class="rte-area" data-lang="thai" contenteditable="true" style="min-height:50px" placeholder="ประโยคตัวอย่าง..."></div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:flex-start">
+      <div class="rte-wrap" style="flex:1">
+        <div class="rte-toolbar">
+          <button class="rte-btn" onclick="rteCmd('bold',this)"><b>B</b></button>
+          <button class="rte-btn" onclick="rteCmd('italic',this)"><i>I</i></button>
+        </div>
+        <div class="rte-area" contenteditable="true" style="min-height:50px" placeholder="Câu ví dụ tiếng Việt..."></div>
+      </div>
+      <button class="btn-remove" onclick="document.getElementById('ex-${eid}').remove()" style="margin-top:36px">✕</button>
+    </div>
+  `;
+  list.insertBefore(row, list.lastElementChild);
+}
+
+function rteCmd(cmd, btn) {
+  document.execCommand(cmd, false, null);
+  btn.classList.toggle('active');
+}
+
+function getDefData() {
+  return defBlocks.map(id => {
+    const thaiEl = document.getElementById('dthai-' + id);
+    const vietEl = document.getElementById('dviet-' + id);
+    const type = document.getElementById('dtype-' + id)?.value || '';
+    const exRows = document.getElementById('exlist-' + id)?.querySelectorAll('.ex-row') || [];
+    const examples = [];
+    exRows.forEach(row => {
+      const areas = row.querySelectorAll('.rte-area');
+      if (areas.length >= 2) {
+        const t = areas[0].innerHTML.trim();
+        const v = areas[1].innerHTML.trim();
+        if (t || v) examples.push({ thai: t, viet: v });
+      }
+    });
+    return {
+      type,
+      thai_meaning: thaiEl?.innerHTML.trim() || '',
+      viet_meaning: vietEl?.innerHTML.trim() || '',
+      examples
+    };
+  }).filter(d => d.thai_meaning || d.viet_meaning);
+}
 
 // ── ADMIN AUTH ────────────────────────────────────────
 const ADMIN_PASSWORD = 'thai2025'; // ← Đổi mật khẩu ở đây
