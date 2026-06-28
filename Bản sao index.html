@@ -1,0 +1,2336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Từ điển Thái – Việt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@300;400;500;600&family=Mitr:wght@300;400;500;600&family=Sriracha&family=Charmonman:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --thai-gold: #C8922A;
+  --thai-gold-light: #FFF3E0;
+  --thai-gold-dark: #8B6318;
+  --thai-red: #1A73E8;
+  --surface: #F8F9FA;
+  --surface-card: #FFFFFF;
+  --border: #E0E0E0;
+  --text-primary: #202124;
+  --text-secondary: #5F6368;
+  --text-muted: #9AA0A6;
+  --radius: 10px;
+  --accent: #1A73E8;
+  --header-bg: #FFFFFF;
+  --header-text: #202124;
+}
+[data-theme="dark"] {
+  --thai-gold: #FFA000;
+  --thai-gold-light: #2D2000;
+  --thai-gold-dark: #FFD54F;
+  --thai-red: #4FC3F7;
+  --accent: #4FC3F7;
+  --surface: #121212;
+  --surface-card: #1E1E1E;
+  --border: #333333;
+  --text-primary: #E8EAED;
+  --text-secondary: #9AA0A6;
+  --text-muted: #5F6368;
+  --header-bg: #1E1E1E;
+  --header-text: #E8EAED;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: var(--text-primary); min-height: 100vh; }
+
+.header {
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  transition: box-shadow 0.2s;
+}
+.header.scrolled {
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+.header-logo { width: 32px; height: 32px; background: var(--thai-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink:0; }
+.header-title { font-size: 15px; font-weight: 600; color: #fff; white-space:nowrap; }
+.header-sub { font-size: 11px; color: rgba(255,255,255,0.65); font-weight: 300; white-space:nowrap; }
+
+/* Header search bar — Google style */
+.header-search-wrap {
+  flex: 1;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 99px;
+  height: 40px;
+  position: relative;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.97);
+  transition: opacity 0.22s, transform 0.22s;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+}
+.header-search-wrap.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+.header-search-wrap:focus-within {
+  box-shadow: 0 1px 10px rgba(0,0,0,0.22);
+}
+/* Google-style search icon on left */
+.header-search-icon {
+  padding: 0 10px 0 14px;
+  color: #9AA0A6;
+  font-size: 17px;
+  display: flex; align-items: center;
+  flex-shrink: 0;
+}
+.header-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0;
+  font-size: 15px;
+  font-family: 'Kodchasan', sans-serif;
+  background: transparent;
+  color: #202124;
+  height: 100%;
+}
+.header-search-input::placeholder { color: #9AA0A6; font-size: 14px; }
+/* Right icons group */
+.header-search-actions {
+  display: flex; align-items: center;
+  gap: 2px; padding-right: 8px; flex-shrink: 0;
+}
+.hsearch-icon-btn {
+  width: 34px; height: 34px;
+  border: none; background: transparent;
+  cursor: pointer; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.hsearch-icon-btn:hover { background: rgba(0,0,0,0.06); }
+.hsearch-divider {
+  width: 1px; height: 20px;
+  background: #DADCE0; margin: 0 4px;
+}
+/* Search SVG icons */
+.icon-search { width: 18px; height: 18px; }
+.icon-kbd { width: 20px; height: 20px; }
+
+/* Header autocomplete */
+.header-ac {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  overflow: hidden;
+  display: none;
+  z-index: 300;
+}
+.header-ac.show { display: block; }
+.header-ac .ac-item {
+  padding: 9px 16px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; border-bottom: 1px solid #F0F0F0;
+  transition: background 0.1s;
+}
+.header-ac .ac-item:last-child { border-bottom: none; }
+.header-ac .ac-item:hover { background: #F8F8F8; }
+
+.header-nav { margin-left: auto; display: flex; gap: 4px; flex-shrink:0; }
+.nav-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); transition: all 0.15s; white-space:nowrap; }
+.nav-btn:hover { background: var(--surface); color: var(--accent); border-color: var(--accent); }
+.nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Thai keyboard */
+.kbd-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  display: none; align-items: flex-end; justify-content: center;
+  background: rgba(0,0,0,0.4);
+}
+.kbd-overlay.show { display: flex; }
+.kbd-panel {
+  background: #F2F2F7; border-radius: 16px 16px 0 0;
+  width: 100%; max-width: 760px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.2); overflow: hidden;
+}
+.kbd-tabs { display: flex; background: #fff; border-bottom: 1px solid #E5E5EA; }
+.kbd-tab {
+  flex: 1; padding: 12px; text-align: center;
+  font-size: 13px; font-weight: 500; color: #8E8E93;
+  cursor: pointer; border: none; background: transparent;
+  font-family: inherit; border-bottom: 2px solid transparent; transition: all 0.15s;
+}
+.kbd-tab.active { color: #1A73E8; border-bottom-color: #1A73E8; }
+.kbd-header {
+  display: flex; align-items: center;
+  justify-content: space-between; padding: 8px 14px 4px;
+}
+.kbd-title { font-size: 11px; font-weight: 500; color: #8E8E93; letter-spacing: 0.3px; text-transform: uppercase; }
+.kbd-close {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: none; background: #E5E5EA;
+  cursor: pointer; font-size: 13px; color: #3C3C43;
+  display: flex; align-items: center; justify-content: center; font-family: inherit;
+}
+.kbd-keys-wrap { padding: 2px 6px 14px; }
+.kbd-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
+.kbd-key {
+  background: #fff; border: none; border-radius: 8px;
+  cursor: pointer; font-family: 'Kodchasan', sans-serif;
+  font-size: 17px; color: #000;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.3), 0 0 0 0.5px rgba(0,0,0,0.1);
+  transition: all 0.08s;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-width: 30px; height: 44px; padding: 0 5px; position: relative;
+}
+.kbd-key:active { background: #E5E5EA; transform: translateY(1px); box-shadow: none; }
+.kbd-key .sub { font-size: 9px; color: #8E8E93; position: absolute; top: 2px; right: 3px; font-family: 'Kodchasan', sans-serif; }
+.kbd-key.dark { background: #ADB5C0; color: #000; font-family: 'Kodchasan', sans-serif; font-size: 12px; min-width: 40px; }
+.kbd-key.dark:active { background: #949AA3; }
+.kbd-key.space-key { flex: 1; max-width: 200px; font-size: 13px; color: #3C3C43; font-family: 'Kodchasan', sans-serif; }
+.handwrite-panel { padding: 14px 16px 18px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.handwrite-canvas-wrap { width: 100%; max-width: 500px; background: #fff; border-radius: 12px; border: 1.5px solid #E5E5EA; overflow: hidden; }
+#handwriteCanvas { display: block; width: 100%; height: 150px; cursor: crosshair; touch-action: none; }
+.handwrite-hint { font-size: 12px; color: #8E8E93; text-align: center; }
+.handwrite-results { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 44px; }
+.hw-result-btn { padding: 8px 18px; background: #fff; border: 1.5px solid #1A73E8; border-radius: 99px; font-family: 'Kodchasan', sans-serif; font-size: 20px; color: #1A73E8; cursor: pointer; transition: all 0.15s; }
+.hw-result-btn:hover { background: #E8F0FE; }
+.handwrite-actions { display: flex; gap: 10px; }
+.hw-btn { padding: 8px 20px; border-radius: 8px; border: none; font-size: 13px; font-family: inherit; cursor: pointer; }
+.hw-btn.clear { background: #E5E5EA; color: #3C3C43; }
+
+
+.main { max-width: 760px; margin: 0 auto; padding: 0 1.25rem 2rem; }
+
+/* Longdo-style hero */
+.hero {
+  text-align: center;
+  padding: 3.5rem 1rem 2.5rem;
+  margin-bottom: 0;
+}
+.hero-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 1.5rem;
+}
+.hero-logo-icon {
+  width: 56px; height: 56px;
+  background: var(--thai-red);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 4px 16px rgba(160,39,42,0.25);
+}
+.hero-logo-text { text-align: left; }
+.hero-title {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 26px; font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.hero-title span { color: var(--accent); }
+.hero-sub-title {
+  font-size: 12px; color: var(--text-muted);
+  font-weight: 400; margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+
+/* Big search bar like Longdo */
+.search-outer {
+  max-width: 620px;
+  margin: 0 auto 10px;
+  position: relative;
+}
+.search-inner {
+  display: flex;
+  border: 1.5px solid var(--border);
+  border-radius: 40px;
+  overflow: hidden;
+  background: var(--surface-card);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s;
+  width: 100%;
+}
+.search-inner:focus-within {
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  border-color: var(--accent);
+}
+.search-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 40px;
+  overflow: visible;
+  background: var(--surface-card);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s;
+}
+.search-wrap:focus-within {
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+}
+.search-input {
+  flex: 1;
+  padding: 16px 20px;
+  font-size: 18px;
+  font-family: 'Kodchasan', sans-serif;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-btn {
+  background: var(--accent);
+  border: none;
+  padding: 0 24px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.search-btn:hover { opacity: 0.88; }
+.search-hint {
+  font-size: 12px; color: var(--text-muted); text-align: center;
+  margin-bottom: 0;
+}
+.search-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  justify-content: center;
+  margin-top: 12px;
+}
+.search-tag {
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 13px; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.15s;
+}
+.search-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--thai-gold-light); }
+
+.autocomplete { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.1); display: none; position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 150; }
+.autocomplete.show { display: block; }
+.ac-item { padding: 10px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item.highlighted { background: var(--thai-gold-light); }
+.ac-thai { font-family: 'Kodchasan', sans-serif; font-size: 16px; color: var(--text-primary); }
+.ac-phonetic { font-size: 12px; color: var(--text-muted); }
+.ac-viet { margin-left: auto; font-size: 13px; color: var(--thai-gold-dark); font-weight: 500; }
+.ac-type { font-size: 11px; background: var(--thai-gold-light); color: var(--thai-gold-dark); padding: 2px 8px; border-radius: 99px; }
+
+.result-section { display: none; }
+.result-section.show { display: block; }
+
+.result-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 1rem; }
+.result-top { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.word-thai-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.word-thai-mitr {
+  font-family: 'Mitr', sans-serif;
+  font-size: 30px; font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.3;
+  text-align: left;
+  word-break: break-word;
+}
+.word-thai-sriracha {
+  font-family: 'Sriracha', cursive;
+  font-size: 30px; font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.3;
+  text-align: center;
+  word-break: break-word;
+}
+.word-thai-charmonman {
+  font-family: 'Charmonman', cursive;
+  font-size: 30px; font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  text-align: right;
+  word-break: break-word;
+}
+.word-phonetic { font-size: 14px; color: var(--text-muted); margin-top: 3px; font-style: italic; }
+.word-type { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 99px; background: var(--thai-gold-light); color: var(--thai-gold-dark); }
+.word-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.btn-action { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.15s; }
+.btn-action:hover { background: var(--thai-gold-light); border-color: var(--thai-gold); }
+.btn-action.active { background: var(--thai-gold-light); border-color: var(--thai-gold); }
+
+.result-meanings { padding: 0; }
+.section-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; padding: 1.25rem 1.5rem 0; }
+
+/* Definition accordion */
+.def-block {
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+.def-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.def-header:hover { background: var(--surface); }
+.def-toggle {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--thai-gold-light);
+  color: var(--thai-gold-dark);
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s;
+}
+.def-block.open .def-toggle { background: var(--accent); color: #fff; }
+.def-num-thai {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 13px; font-weight: 600;
+  color: var(--thai-red);
+  min-width: 18px;
+}
+.def-num-arab {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-muted);
+}
+.def-type {
+  font-size: 11px; font-weight: 600;
+  padding: 2px 9px; border-radius: 99px;
+  background: var(--thai-gold-light); color: var(--thai-gold-dark);
+}
+.def-summary { flex: 1; min-width: 0; }
+.def-thai-meaning {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 14px; color: #6B3FA0;
+  line-height: 1.4;
+}
+.def-viet-meaning {
+  font-size: 13px; color: var(--text-secondary);
+  margin-top: 2px; line-height: 1.4;
+}
+.def-body {
+  display: none;
+  padding: 0 1.5rem 14px 1.5rem;
+  background: #FDFAF5;
+  border-top: 1px dashed var(--border);
+}
+.def-block.open .def-body { display: block; }
+.def-ex-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin: 12px 0 8px;
+}
+.def-ex-item {
+  margin-bottom: 10px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.def-ex-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.def-ex-num {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 11px; color: var(--accent);
+  font-weight: 600; margin-bottom: 2px;
+}
+.def-ex-thai {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 14px; color: #6B3FA0;
+  line-height: 1.5;
+} /* fixed */
+.def-ex-viet {
+  font-size: 13px; color: var(--text-secondary);
+  margin-top: 2px; line-height: 1.4;
+}
+
+.result-examples { padding: 1.25rem 1.5rem; background: #FDF8EF; }
+.example-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.example-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+/* Rich text editor toolbar */
+.rte-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.rte-toolbar {
+  display: flex; gap: 2px; padding: 6px 8px;
+  background: #F0EBE0; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.rte-btn {
+  width: 28px; height: 28px; border-radius: 5px;
+  border: none; background: transparent;
+  cursor: pointer; font-size: 13px; font-weight: 700;
+  color: var(--text-secondary); display: flex;
+  align-items: center; justify-content: center;
+  transition: background 0.1s;
+}
+.rte-btn:hover { background: var(--border); }
+.rte-btn.active { background: var(--thai-gold-light); color: var(--thai-gold-dark); }
+.rte-sep { width: 1px; background: var(--border); margin: 2px 4px; }
+.rte-area {
+  min-height: 70px; padding: 10px 12px;
+  font-size: 14px; font-family: 'Kodchasan', sans-serif;
+  outline: none; line-height: 1.6;
+  color: var(--text-primary);
+}
+.rte-area[data-lang="thai"] { font-family: 'Kodchasan', sans-serif; } /* thai rte */
+
+/* Admin def builder */
+.def-builder {
+  border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; margin-bottom: 12px; background: var(--surface-card);
+}
+.def-builder-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: #F5EFE0;
+  border-bottom: 1px solid var(--border);
+}
+.def-builder-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); flex: 1; }
+.def-builder-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.def-ex-builder { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-top: 4px; }
+.def-ex-builder-title { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+.ex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.ex-row:last-child { margin-bottom: 0; }
+.btn-add-ex { font-size: 12px; color: var(--thai-gold-dark); background: var(--thai-gold-light); border: none; border-radius: 6px; padding: 5px 12px; cursor: pointer; font-family: inherit; }
+.btn-remove { width: 26px; height: 26px; border-radius: 5px; border: none; background: #FFE8E8; color: #C0392B; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.ex-thai { font-family: 'Kodchasan', sans-serif; font-size: 15px; color: var(--text-primary); margin-bottom: 2px; }
+.ex-viet { font-size: 13px; color: var(--text-secondary); }
+
+.related-section { margin-bottom: 1.5rem; }
+.section-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; }
+.related-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.related-pill { padding: 6px 14px; border: 1px solid var(--border); border-radius: 99px; font-family: 'Kodchasan', sans-serif; font-size: 14px; color: var(--text-secondary); background: var(--surface-card); cursor: pointer; transition: all 0.15s; }
+.related-pill:hover { border-color: var(--thai-gold); background: var(--thai-gold-light); color: var(--thai-gold-dark); }
+
+.wod-card { background: var(--thai-red); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; }
+.wod-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+.wod-thai { font-family: 'Kodchasan', sans-serif; font-size: 28px; font-weight: 600; color: #fff; }
+.wod-phonetic { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+.wod-meaning { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 8px; }
+.wod-btn { margin-left: auto; padding: 8px 16px; background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-family: inherit; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+.wod-btn:hover { background: rgba(255,255,255,0.25); }
+
+.recent-section { margin-bottom: 1.5rem; }
+.recent-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; cursor: pointer; transition: border-color 0.15s; }
+.recent-row:hover { border-color: var(--thai-gold); }
+.recent-thai { font-family: 'Kodchasan', sans-serif; font-size: 15px; color: var(--text-primary); }
+.recent-viet { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+
+.empty-state { text-align: center; padding: 3rem 1rem; display: none; }
+.empty-state.show { display: block; }
+.empty-emoji { font-size: 40px; margin-bottom: 12px; }
+.empty-title { font-size: 16px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+.empty-sub { font-size: 13px; color: var(--text-muted); }
+
+.page { display: none; }
+.page.active { display: block; }
+.fav-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+
+/* Loading spinner */
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--thai-gold); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-bar { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 14px; }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text-primary); color: #fff; padding: 10px 20px; border-radius: 99px; font-size: 13px; font-weight: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 999; pointer-events: none; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Edit modal */
+.btn-small.edit:hover { background: #E8F0FE; border-color: var(--accent); }
+/* Footer clock */
+#siteFooter {
+  background: var(--header-bg);
+  border-top: 1px solid var(--border);
+  padding: 14px 1.5rem;
+  text-align: center;
+  margin-top: 3rem;
+}
+#footerClock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.clock-thai {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+.clock-viet {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+/* Dark mode */
+body { transition: background 0.2s, color 0.2s; }
+
+/* Longdo-style word list sidebar for admin */
+.admin-wordlist-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 600px) { .admin-wordlist-wrap { grid-template-columns: 1fr; } }
+
+/* Quote card */
+.quote-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+.quote-icon {
+  font-size: 40px;
+  color: var(--accent);
+  opacity: 0.2;
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  line-height: 1;
+  font-family: Georgia, serif;
+}
+.quote-text {
+  font-size: 16px;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.7;
+  padding-left: 8px;
+  min-height: 28px;
+}
+.quote-author {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  padding-left: 8px;
+  font-weight: 500;
+}
+
+/* PopThai */
+.search-mode-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 3px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.search-mode-tab {
+  padding: 6px 20px;
+  border-radius: 99px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Kodchasan', sans-serif;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.search-mode-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* PopThai sentence area */
+.popthai-wrap { display: none; }
+.popthai-wrap.show { display: block; }
+.popthai-input-area {
+  position: relative;
+  margin-bottom: 12px;
+}
+.popthai-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 14px 50px 14px 18px;
+  font-size: 17px;
+  font-family: 'Kodchasan', sans-serif;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  outline: none;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+.popthai-textarea:focus { border-color: var(--accent); }
+.popthai-textarea::placeholder { color: var(--text-muted); }
+.popthai-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto 20px;
+  transition: opacity 0.15s;
+}
+.popthai-btn:hover { opacity: 0.88; }
+
+/* Segmented words display */
+.popthai-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  min-height: 60px;
+}
+.pt-word {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: 1.5px solid transparent;
+}
+.pt-word:hover { background: var(--thai-gold-light); }
+.pt-word.active {
+  background: var(--thai-gold-light);
+  border-color: var(--accent);
+}
+.pt-word-thai {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 20px;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.pt-word-phonetic {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.pt-word.space-word {
+  cursor: default;
+  padding: 6px 4px;
+}
+.pt-word.space-word .pt-word-thai { color: transparent; font-size: 12px; }
+
+/* PopThai definition panel */
+.pt-def-panel {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  display: none;
+}
+.pt-def-panel.show { display: block; }
+.pt-def-header {
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.pt-def-thai {
+  font-family: 'Kodchasan', sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.pt-def-phonetic {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.pt-def-body { padding: 12px 18px; }
+.pt-def-row {
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  align-items: baseline;
+}
+.pt-def-row:last-child { border-bottom: none; }
+.pt-def-num {
+  width: 22px; height: 22px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pt-def-text {
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+.pt-not-found {
+  padding: 16px 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Login modal */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; display: none;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--surface-card);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 340px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.modal-icon { font-size: 40px; margin-bottom: 12px; }
+.modal-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 1.5rem; }
+.modal-input {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 15px;
+  font-family: inherit; outline: none;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+  text-align: center; letter-spacing: 3px;
+}
+.modal-input:focus { border-color: var(--accent); }
+.modal-input.error { border-color: #E53E3E; animation: shake 0.3s; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)}
+}
+.modal-error { font-size: 12px; color: #E53E3E; margin-bottom: 10px; min-height: 16px; }
+.modal-btn {
+  width: 100%; padding: 11px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  margin-bottom: 8px;
+  transition: opacity 0.15s;
+}
+.modal-btn:hover { opacity: 0.88; }
+.modal-cancel {
+  font-size: 13px; color: var(--text-muted);
+  cursor: pointer; background: none; border: none;
+  font-family: inherit;
+}
+.modal-cancel:hover { color: var(--text-secondary); }
+.admin-badge {
+  display: inline-block;
+  font-size: 11px; padding: 2px 8px;
+  background: #E8F5E9; color: #2E7D32;
+  border-radius: 99px; margin-left: 6px;
+}
+
+/* Admin */
+.admin-header { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+.admin-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.admin-sub { font-size: 13px; color: var(--text-muted); }
+.admin-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
+.stat-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; }
+.stat-num { font-size: 24px; font-weight: 600; color: var(--accent); }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+.add-word-form { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+.form-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.form-input, .form-select, .form-textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; background: var(--surface); color: var(--text-primary); outline: none; transition: border-color 0.2s; }
+.form-input.thai-font { font-family: 'Kodchasan', sans-serif; font-size: 16px; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--thai-gold); box-shadow: 0 0 0 3px rgba(200,146,42,0.1); }
+.form-textarea { min-height: 70px; resize: vertical; }
+.btn-submit { width: 100%; padding: 11px; background: var(--thai-red); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: opacity 0.15s; }
+.btn-submit:hover { opacity: 0.88; }
+.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.word-list-admin { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.wla-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.wla-search { flex: 1; padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Kodchasan', sans-serif; background: var(--surface); outline: none; }
+.wla-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.wla-row:last-child { border-bottom: none; }
+.wla-row:hover { background: var(--surface); }
+.wla-thai { font-family: 'Kodchasan', sans-serif; font-size: 16px; color: var(--text-primary); min-width: 120px; }
+.wla-viet { font-size: 13px; color: var(--text-secondary); flex: 1; }
+.wla-type { font-size: 11px; background: var(--thai-gold-light); color: var(--thai-gold-dark); padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.wla-actions { display: flex; gap: 4px; }
+.btn-small { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+.btn-small:hover { background: var(--thai-gold-light); border-color: var(--thai-gold); }
+.btn-small.del:hover { background: #FFE8E8; border-color: #F09595; }
+</style>
+</head>
+<body>
+
+<header class="header" id="mainHeader">
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <div class="header-logo">📖</div>
+    <div>
+      <div class="header-title">Từ điển Thái – Việt</div>
+      <div class="header-sub">Thai – Vietnamese Dictionary</div>
+    </div>
+  </div>
+
+  <!-- Header search (appears on scroll) -->
+  <div class="header-search-wrap" id="headerSearchWrap">
+    <input class="header-search-input" id="headerSearchInput" type="text"
+      placeholder="ค้นหา · Tra từ tiếng Thái..."
+      autocomplete="off"
+      oninput="onHeaderSearch(this.value)"
+      onkeydown="onHeaderKeydown(event)">
+    <button class="header-kbd-btn" onclick="openKeyboard('headerSearchInput')" title="Bàn phím Thái">⌨️</button>
+    <button class="header-search-btn" onclick="doHeaderSearch()">🔍</button>
+    <div class="header-ac" id="headerAc"></div>
+  </div>
+
+  <nav class="header-nav">
+    <button class="nav-btn active" id="navHome" onclick="showPage('home')">🏠 Trang chủ</button>
+    <button class="nav-btn" id="darkModeBtn" onclick="toggleDark()" title="Dark mode">🌙</button>
+    <button class="nav-btn" onclick="showPage('favorites')">❤️ Yêu thích</button>
+    <button class="nav-btn" id="adminNavBtn" onclick="showPage('admin')" style="display:none">⚙️ Admin</button>
+  </nav>
+</header>
+
+<!-- Thai Keyboard Overlay -->
+<div class="kbd-overlay" id="kbdOverlay" onclick="closeKeyboardOutside(event)">
+  <div class="kbd-panel" id="kbdPanel">
+    <div class="kbd-tabs">
+      <button class="kbd-tab active" id="tabTIS" onclick="switchKbdTab('tis')">Tiếng Thái – TIS</button>
+      <button class="kbd-tab" id="tabHW" onclick="switchKbdTab('hw')">✏️ Viết tay</button>
+    </div>
+    <div id="kbdTIS">
+      <div class="kbd-header">
+        <span class="kbd-title">Bàn phím Thái TIS 820-2531</span>
+        <button class="kbd-close" onclick="closeKeyboard()">✕</button>
+      </div>
+      <div class="kbd-keys-wrap" id="kbdKeys"></div>
+    </div>
+    <div id="kbdHW" style="display:none">
+      <div class="kbd-header">
+        <span class="kbd-title">Viết tay tiếng Thái</span>
+        <button class="kbd-close" onclick="closeKeyboard()">✕</button>
+      </div>
+      <div class="handwrite-panel">
+        <div class="handwrite-canvas-wrap">
+          <canvas id="handwriteCanvas" width="500" height="150"></canvas>
+        </div>
+        <div class="handwrite-hint">Viết ký tự Thái vào ô trên, kết quả gợi ý sẽ hiện bên dưới</div>
+        <div class="handwrite-results" id="hwResults">
+          <span style="font-size:13px;color:#8E8E93">Viết ký tự để xem gợi ý...</span>
+        </div>
+        <div class="handwrite-actions">
+          <button class="hw-btn clear" onclick="clearCanvas()">🗑 Xóa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="hero">
+      <div class="hero-logo-wrap">
+        <div class="hero-logo-icon">📖</div>
+        <div class="hero-logo-text">
+          <div class="hero-title">Từ điển <span>Thái – Việt</span></div>
+          <div class="hero-sub-title">Thai – Vietnamese Dictionary · ไทย–เวียดนาม</div>
+        </div>
+      </div>
+      <div class="search-outer">
+        <div class="search-wrap">
+          <div class="search-inner">
+            <input class="search-input" id="searchInput" type="text"
+              placeholder="ค้นหาคำศัพท์ · Nhập từ tiếng Thái hoặc tiếng Việt"
+              autocomplete="off" oninput="onSearch(this.value)" onkeydown="onKeydown(event)">
+            <button class="hsearch-icon-btn" onclick="openKeyboard('searchInput')" title="Bàn phím Thái" style="flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#9AA0A6" stroke-width="1.5"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M8 17h8" stroke="#9AA0A6" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <button class="search-btn" onclick="doSearch()">🔍</button>
+          </div>
+          <div id="autocomplete" class="autocomplete"></div>
+        </div>
+        <!-- Mode tabs -->
+        <div class="search-mode-tabs">
+          <button class="search-mode-tab active" id="modeTabWord" onclick="switchSearchMode('word')">🔍 Tra từ</button>
+          <button class="search-mode-tab" id="modeTabPop" onclick="switchSearchMode('popthai')">✂️ Tách từ</button>
+        </div>
+
+        <!-- Quick tags (word mode) -->
+        <div class="search-tags" id="quickTags">
+          <span class="search-tag" onclick="quickSearch('สวัสดี')">สวัสดี</span>
+          <span class="search-tag" onclick="quickSearch('ขอบคุณ')">ขอบคุณ</span>
+          <span class="search-tag" onclick="quickSearch('รัก')">รัก</span>
+          <span class="search-tag" onclick="quickSearch('กิน')">กิน</span>
+          <span class="search-tag" onclick="quickSearch('บ้าน')">บ้าน</span>
+          <span class="search-tag" onclick="quickSearch('น้ำ')">น้ำ</span>
+        </div>
+
+        <!-- PopThai mode -->
+        <div class="popthai-wrap" id="popthaiWrap">
+          <div class="popthai-input-area">
+            <textarea class="popthai-textarea" id="popthaiInput"
+              placeholder="วางข้อความภาษาไทยที่ต้องการแยกคำ...&#10;Ví dụ: นี่คือข้อความทดสอบ"></textarea>
+          </div>
+          <button class="popthai-btn" onclick="runPopthai()">✂️ Tách từ</button>
+          <div class="popthai-words" id="popthaiWords" style="display:none"></div>
+          <div class="pt-def-panel" id="ptDefPanel">
+            <div class="pt-def-header">
+              <span class="pt-def-thai" id="ptDefThai"></span>
+              <span class="pt-def-phonetic" id="ptDefPhonetic"></span>
+            </div>
+            <div class="pt-def-body" id="ptDefBody"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultSection" class="result-section">
+      <div class="result-card">
+        <div class="result-top">
+          <div style="flex:1;min-width:0">
+            <div class="word-thai-wrap" id="rThai"></div>
+            <div class="word-phonetic" id="rPhonetic"></div>
+            <span class="word-type" id="rType"></span>
+          </div>
+          <div class="word-actions">
+            <button class="btn-action" title="Phát âm" onclick="speak()">🔊</button>
+            <button class="btn-action" id="btnFav" title="Lưu yêu thích" onclick="toggleFav()">🤍</button>
+          </div>
+        </div>
+        <div class="result-meanings">
+          <div id="rDefinitions"></div>
+        </div>
+      </div>
+      <div class="related-section">
+        <div class="section-title">Từ cùng loại</div>
+        <div class="related-grid" id="relatedGrid"></div>
+      </div>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+      <div class="empty-emoji">🔍</div>
+      <div class="empty-title">Không tìm thấy từ này</div>
+      <div class="empty-sub">Thử tìm với từ khác hoặc kiểm tra chính tả</div>
+    </div>
+
+    <div id="homeDefault">
+      <!-- Quote of the day -->
+      <div class="quote-card" id="quoteCard">
+        <div class="quote-icon">❝</div>
+        <div class="quote-text" id="quoteText">Đang tải câu trích dẫn...</div>
+        <div class="quote-author" id="quoteAuthor"></div>
+      </div>
+      <div class="recent-section" id="recentSection" style="display:none">
+        <div class="section-title">Đã tra gần đây</div>
+        <div id="recentList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAVORITES -->
+  <div id="page-favorites" class="page">
+    <div style="margin-bottom:1.25rem">
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary);margin-bottom:4px">❤️ Từ yêu thích</div>
+      <div style="font-size:13px;color:var(--text-muted)">Những từ bạn đã lưu lại</div>
+    </div>
+    <div id="favList"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="page-admin" class="page">
+    <!-- Quote management -->
+    <div class="add-word-form" style="margin-bottom:1rem">
+      <div class="form-title">💬 Quản lý câu quote trang chủ</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Nội dung câu quote *</label>
+          <div class="rte-wrap">
+            <div class="rte-toolbar">
+              <button class="rte-btn" onclick="rteCmd('bold',this)"><b>B</b></button>
+              <button class="rte-btn" onclick="rteCmd('italic',this)"><i>I</i></button>
+              <button class="rte-btn" onclick="rteCmd('underline',this)"><u>U</u></button>
+            </div>
+            <div class="rte-area" contenteditable="true" id="quoteInput" placeholder="Nhập câu trích dẫn..."></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tác giả</label>
+          <input class="form-input" id="quoteAuthorInput" placeholder="Tên tác giả (tùy chọn)">
+        </div>
+      </div>
+      <button class="btn-submit" onclick="saveQuote()">Lưu câu quote</button>
+    </div>
+
+    <div class="admin-header" style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="admin-title">⚙️ Quản lý từ vựng <span class="admin-badge">● Đã đăng nhập</span></div>
+        <div class="admin-sub">Thêm, sửa, xóa từ trong từ điển — lưu vĩnh viễn trên Supabase</div>
+      </div>
+      <button onclick="logoutAdmin()" style="padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:transparent;font-size:13px;cursor:pointer;color:var(--text-muted);font-family:inherit">Đăng xuất</button>
+    </div>
+    <div class="admin-stats">
+      <div class="stat-card"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Tổng số từ</div></div>
+      <div class="stat-card"><div class="stat-num" id="statFav">0</div><div class="stat-label">Yêu thích</div></div>
+      <div class="stat-card"><div class="stat-num" id="statRecent">0</div><div class="stat-label">Đã tra cứu</div></div>
+    </div>
+
+    <div class="add-word-form">
+      <div class="form-title">➕ Thêm từ mới</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Từ tiếng Thái *</label>
+          <input class="form-input thai-font" id="fThai" placeholder="เช่น สวัสดี">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phiên âm</label>
+          <input class="form-input" id="fPhonetic" placeholder="sa-wàt-dee">
+        </div>
+      </div>
+
+      <!-- Definition builder -->
+      <div class="form-label" style="margin-bottom:8px">Định nghĩa * <span style="font-weight:400;color:var(--text-muted)">(có thể thêm nhiều định nghĩa)</span></div>
+      <div id="defBuilderList"></div>
+      <button type="button" onclick="addDefBlock()" style="width:100%;padding:9px;border:1.5px dashed var(--border);border-radius:8px;background:transparent;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:inherit;margin-bottom:12px">+ Thêm định nghĩa</button>
+
+      <button class="btn-submit" id="btnAdd" onclick="addWord()">Thêm từ vào từ điển</button>
+    </div>
+
+    <div class="word-list-admin">
+      <div class="wla-header">
+        <span style="font-size:13px;font-weight:600;color:var(--text-secondary)">Danh sách từ</span>
+        <input class="wla-search" id="adminSearch" oninput="filterAdminList(this.value)" placeholder="Tìm từ...">
+      </div>
+      <div id="adminList"><div class="loading-bar"><span class="spinner"></span>Đang tải...</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer id="siteFooter">
+  <div id="footerClock"></div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- Admin Login Modal -->
+<!-- Edit Word Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box" style="width:400px;text-align:left">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div style="font-size:16px;font-weight:600;color:var(--text-primary)">✏️ Chỉnh sửa từ</div>
+      <button class="modal-cancel" onclick="closeEditModal()">✕</button>
+    </div>
+    <input type="hidden" id="editId">
+    <div class="form-group" style="margin-bottom:10px">
+      <label class="form-label">Từ tiếng Thái *</label>
+      <input class="form-input" style="font-family:Kodchasan,sans-serif;font-size:16px" id="editThai">
+    </div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="form-group">
+        <label class="form-label">Phiên âm</label>
+        <input class="form-input" id="editPhonetic">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Loại từ</label>
+        <select class="form-select" id="editType">
+          <option value="danh từ">Danh từ</option>
+          <option value="động từ">Động từ</option>
+          <option value="tính từ">Tính từ</option>
+          <option value="thán từ">Thán từ</option>
+          <option value="trạng từ">Trạng từ</option>
+          <option value="giới từ">Giới từ</option>
+          <option value="liên từ">Liên từ</option>
+          <option value="đại từ">Đại từ</option>
+          <option value="thành ngữ">Thành ngữ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label class="form-label">Nghĩa tiếng Việt (cách nhau bằng dấu phẩy)</label>
+      <input class="form-input" id="editMeaning">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-submit" id="btnSaveEdit" onclick="saveEdit()" style="flex:1">Lưu thay đổi</button>
+      <button onclick="closeEditModal()" style="padding:11px 18px;border:1px solid var(--border);border-radius:8px;background:transparent;font-size:13px;font-family:inherit;cursor:pointer;color:var(--text-muted)">Hủy</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box">
+    <div class="modal-icon">🔐</div>
+    <div class="modal-title">Đăng nhập Admin</div>
+    <div class="modal-sub">Nhập mật khẩu để vào trang quản lý từ vựng</div>
+    <input class="modal-input" id="pwInput" type="password"
+      placeholder="••••••••"
+      onkeydown="if(event.key==='Enter') checkPassword()">
+    <div class="modal-error" id="pwError"></div>
+    <button class="modal-btn" onclick="checkPassword()">Đăng nhập</button>
+    <button class="modal-cancel" onclick="closeLogin()">Hủy</button>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://luoqsudzbmkzxosbdmmp.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1b3FzdWR6Ym1renhvc2JkbW1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NjkxMTcsImV4cCI6MjA5ODE0NTExN30.0k87aqhSyFpFAah3H-MQ4QObWV3CCT77AcLcUx23KKg';
+
+const headers = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': 'Bearer ' + SUPABASE_KEY,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+};
+
+async function sbGet(path) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + path, { headers });
+  return r.json();
+}
+async function sbPost(path, body) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + path, { method: 'POST', headers, body: JSON.stringify(body) });
+  return r.json();
+}
+async function sbDelete(path) {
+  await fetch(SUPABASE_URL + '/rest/v1/' + path, { method: 'DELETE', headers });
+}
+
+// ── STATE ─────────────────────────────────────────────
+let allWords = [];
+let filteredWords = [];
+let currentWord = null;
+let acIndex = -1;
+let acResults = [];
+let favorites = JSON.parse(localStorage.getItem('thai_favs') || '[]');
+let recentSearches = JSON.parse(localStorage.getItem('thai_recent') || '[]');
+
+// ── LOAD DATA ─────────────────────────────────────────
+async function loadWords() {
+  try {
+    const data = await sbGet('words?select=*&order=thai.asc');
+    allWords = data.map(w => ({
+      ...w,
+      meanings: Array.isArray(w.meanings) ? w.meanings : (w.meanings ? [w.meanings] : []),
+      examples: w.examples || [],
+      definitions: w.definitions || []
+    }));
+    initWOD();
+    renderRecent();
+    updateStats();
+  } catch(e) {
+    showToast('⚠️ Lỗi kết nối database');
+  }
+}
+
+// ── SEARCH ────────────────────────────────────────────
+let searchTimeout;
+function onSearch(val) {
+  clearTimeout(searchTimeout);
+  val = val.trim();
+  const ac = document.getElementById('autocomplete');
+  const homeDefault = document.getElementById('homeDefault');
+  const resultSection = document.getElementById('resultSection');
+  const emptyState = document.getElementById('emptyState');
+
+  if (!val) {
+    ac.classList.remove('show');
+    homeDefault.style.display = 'block';
+    resultSection.classList.remove('show');
+    emptyState.classList.remove('show');
+    acResults = []; acIndex = -1;
+    return;
+  }
+
+  homeDefault.style.display = 'none';
+  resultSection.classList.remove('show');
+  emptyState.classList.remove('show');
+
+  searchTimeout = setTimeout(() => {
+    const q = val.toLowerCase();
+    acResults = allWords.filter(w =>
+      w.thai.includes(val) ||
+      (w.phonetic && w.phonetic.toLowerCase().includes(q)) ||
+      (w.meanings && w.meanings.some(m => m.toLowerCase().includes(q)))
+    ).slice(0, 7);
+
+    if (!acResults.length) {
+      ac.classList.remove('show');
+      emptyState.classList.add('show');
+      return;
+    }
+
+    ac.innerHTML = acResults.map((w, i) => `
+      <div class="ac-item" onmousedown="selectWord(${w.id})" id="ac-${i}">
+        <div>
+          <div class="ac-thai">${w.thai}</div>
+          <div class="ac-phonetic">${w.phonetic || ''}</div>
+        </div>
+        <span class="ac-type">${w.type || ''}</span>
+        <div class="ac-viet">${w.meanings ? w.meanings[0] : ''}</div>
+      </div>
+    `).join('');
+    ac.classList.add('show');
+    acIndex = -1;
+  }, 150);
+}
+
+function onKeydown(e) {
+  if (e.key === 'ArrowDown') { acIndex = Math.min(acIndex+1, acResults.length-1); highlightAC(); }
+  else if (e.key === 'ArrowUp') { acIndex = Math.max(acIndex-1, 0); highlightAC(); }
+  else if (e.key === 'Enter') {
+    if (acIndex >= 0 && acResults[acIndex]) selectWord(acResults[acIndex].id);
+    else if (acResults.length > 0) selectWord(acResults[0].id);
+  } else if (e.key === 'Escape') {
+    document.getElementById('autocomplete').classList.remove('show');
+  }
+}
+
+function highlightAC() {
+  document.querySelectorAll('.ac-item').forEach((el, i) => el.classList.toggle('highlighted', i === acIndex));
+}
+
+function selectWord(id) {
+  const word = allWords.find(w => w.id === id);
+  if (!word) return;
+  currentWord = word;
+  document.getElementById('searchInput').value = word.thai;
+  document.getElementById('autocomplete').classList.remove('show');
+  showResult(word);
+  addRecent(word);
+}
+
+const THAI_NUMS_DEF = ['๑','๒','๓','๔','๕','๖','๗','๘','๙','๑๐'];
+
+function toggleDef(el) {
+  el.closest('.def-block').classList.toggle('open');
+  const tog = el.querySelector('.def-toggle');
+  tog.textContent = el.closest('.def-block').classList.contains('open') ? '−' : '+';
+}
+
+function showResult(word) {
+  const t = word.thai;
+  document.getElementById('rThai').innerHTML = `
+    <div style="text-align:left;flex:1;min-width:0"><span class="word-thai-mitr">${t}</span></div>
+    <div style="text-align:center;flex:1;min-width:0"><span class="word-thai-sriracha">${t}</span></div>
+    <div style="text-align:right;flex:1;min-width:0"><span class="word-thai-charmonman">${t}</span></div>
+  `;
+  document.getElementById('rPhonetic').textContent = word.phonetic || '';
+  document.getElementById('rType').textContent = '';
+
+  // Render definitions accordion
+  const defs = word.definitions || [];
+  const defEl = document.getElementById('rDefinitions');
+  if (defs.length) {
+    defEl.innerHTML = defs.map((def, i) => {
+      const exHTML = (def.examples || []).map((ex, j) => `
+        <div class="def-ex-item">
+          <div class="def-ex-num">${THAI_NUMS_DEF[j] || j+1} ${j+1}.</div>
+          <div class="def-ex-thai">${ex.thai || ''}</div>
+          <div class="def-ex-viet">${ex.viet || ''}</div>
+        </div>
+      `).join('');
+      return `
+        <div class="def-block${i===0?' open':''}">
+          <div class="def-header" onclick="toggleDef(this)">
+            <div class="def-toggle">${i===0?'−':'+'}</div>
+            <span class="def-num-thai">${THAI_NUMS_DEF[i]||i+1}</span>
+            <span class="def-num-arab">${i+1}.</span>
+            ${def.type ? `<span class="def-type">${def.type}</span>` : ''}
+            <div class="def-summary">
+              <div class="def-thai-meaning">${def.thai_meaning || ''}</div>
+              <div class="def-viet-meaning">${def.viet_meaning || ''}</div>
+            </div>
+          </div>
+          ${exHTML ? `<div class="def-body">${exHTML}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  } else {
+    // fallback: show old meanings format
+    const meanings = word.meanings || [];
+    defEl.innerHTML = meanings.map((m, i) => `
+      <div class="def-block${i===0?' open':''}">
+        <div class="def-header" onclick="toggleDef(this)">
+          <div class="def-toggle">${i===0?'−':'+'}</div>
+          <span class="def-num-thai">${THAI_NUMS_DEF[i]||i+1}</span>
+          <span class="def-num-arab">${i+1}.</span>
+          <div class="def-summary">
+            <div class="def-viet-meaning">${m}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const related = allWords.filter(w => w.id !== word.id && w.type === word.type).slice(0, 6);
+  document.getElementById('relatedGrid').innerHTML = related.map(w =>
+    `<div class="related-pill" onclick="selectWord(${w.id})">${w.thai} · ${(w.meanings||[])[0]||''}</div>`
+  ).join('');
+
+  const isFav = favorites.includes(word.id);
+  document.getElementById('btnFav').textContent = isFav ? '❤️' : '🤍';
+  document.getElementById('btnFav').classList.toggle('active', isFav);
+
+  document.getElementById('resultSection').classList.add('show');
+  document.getElementById('emptyState').classList.remove('show');
+  document.getElementById('homeDefault').style.display = 'none';
+}
+
+// ── SPEAK ─────────────────────────────────────────────
+function speak() {
+  if (!currentWord) return;
+  const u = new SpeechSynthesisUtterance(currentWord.thai);
+  u.lang = 'th-TH'; u.rate = 0.85;
+  speechSynthesis.speak(u);
+  showToast('🔊 Đang phát âm...');
+}
+
+// ── FAVORITES ─────────────────────────────────────────
+function toggleFav() {
+  if (!currentWord) return;
+  const idx = favorites.indexOf(currentWord.id);
+  if (idx >= 0) {
+    favorites.splice(idx, 1);
+    document.getElementById('btnFav').textContent = '🤍';
+    document.getElementById('btnFav').classList.remove('active');
+    showToast('Đã bỏ khỏi yêu thích');
+  } else {
+    favorites.push(currentWord.id);
+    document.getElementById('btnFav').textContent = '❤️';
+    document.getElementById('btnFav').classList.add('active');
+    showToast('❤️ Đã lưu vào yêu thích');
+  }
+  localStorage.setItem('thai_favs', JSON.stringify(favorites));
+  updateStats();
+}
+
+function renderFavorites() {
+  const favWords = allWords.filter(w => favorites.includes(w.id));
+  const el = document.getElementById('favList');
+  if (!favWords.length) {
+    el.innerHTML = '<div class="fav-empty">❤️<br><br>Chưa có từ yêu thích<br><span style="font-size:13px">Tra cứu và nhấn 🤍 để lưu từ</span></div>';
+    return;
+  }
+  el.innerHTML = favWords.map(w => `
+    <div class="recent-row" onclick="goToWord(${w.id})">
+      <div>
+        <div class="recent-thai">${w.thai} · <span style="font-size:13px;color:var(--text-muted)">${w.phonetic||''}</span></div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-top:2px">${(w.meanings||[])[0]||''}</div>
+      </div>
+      <div class="recent-viet">${w.type||''}</div>
+    </div>
+  `).join('');
+}
+
+// ── RECENT ────────────────────────────────────────────
+function addRecent(word) {
+  recentSearches = [word.id, ...recentSearches.filter(id => id !== word.id)].slice(0, 5);
+  localStorage.setItem('thai_recent', JSON.stringify(recentSearches));
+  updateStats();
+}
+
+function renderRecent() {
+  const recentWords = recentSearches.map(id => allWords.find(w => w.id === id)).filter(Boolean);
+  const section = document.getElementById('recentSection');
+  if (!recentWords.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  document.getElementById('recentList').innerHTML = recentWords.map(w => `
+    <div class="recent-row" onclick="selectWord(${w.id})">
+      <div class="recent-thai">${w.thai}</div>
+      <div class="recent-viet">${(w.meanings||[])[0]||''}</div>
+    </div>
+  `).join('');
+}
+
+// ── WOD ───────────────────────────────────────────────
+function initWOD() {
+  // WOD replaced by quote - no-op
+}
+function lookupWOD() {}
+
+// ── PAGES ─────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  // update nav active state by id
+  ['navHome'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', id === 'navHome' && name === 'home');
+  });
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    const onclick = b.getAttribute('onclick') || '';
+    const match = onclick.match(/showPage\('(\w+)'\)/);
+    if (match) b.classList.toggle('active', match[1] === name);
+  });
+  if (name === 'favorites') renderFavorites();
+  if (name === 'admin') { updateStats(); renderAdminList(allWords); }
+}
+
+function goToWord(id) { showPage('home'); selectWord(id); }
+
+// ── ADMIN ─────────────────────────────────────────────
+async function addWord() {
+  const thai = document.getElementById('fThai').value.trim();
+  const phonetic = document.getElementById('fPhonetic').value.trim();
+  if (!thai) { showToast('⚠️ Vui lòng nhập từ tiếng Thái'); return; }
+
+  const definitions = getDefData();
+  if (!definitions.length) { showToast('⚠️ Vui lòng thêm ít nhất 1 định nghĩa'); return; }
+
+  // Fallback meanings for backward compat
+  const meanings = definitions.map(d => d.viet_meaning.replace(/<[^>]+>/g,'') || d.thai_meaning.replace(/<[^>]+>/g,''));
+  const type = definitions[0]?.type || 'danh từ';
+
+  const btn = document.getElementById('btnAdd');
+  btn.disabled = true; btn.textContent = 'Đang lưu...';
+
+  try {
+    const result = await sbPost('words', { thai, phonetic: phonetic || null, type, meanings, definitions, examples: [] });
+    if (result && result[0]) {
+      allWords.push({ ...result[0], meanings, definitions, examples: [] });
+      allWords.sort((a,b) => a.thai.localeCompare(b.thai));
+      document.getElementById('fThai').value = '';
+      document.getElementById('fPhonetic').value = '';
+      document.getElementById('defBuilderList').innerHTML = '';
+      defBlocks = [];
+      showToast('✅ Đã thêm từ: ' + thai);
+      updateStats();
+      renderAdminList(allWords);
+    } else { showToast('⚠️ Lỗi khi thêm từ'); }
+  } catch(e) { showToast('⚠️ Lỗi kết nối'); }
+
+  btn.disabled = false; btn.textContent = 'Thêm từ vào từ điển';
+}
+
+async function deleteWord(id) {
+  if (!confirm('Xóa từ này khỏi từ điển?')) return;
+  await sbDelete('words?id=eq.' + id);
+  allWords = allWords.filter(w => w.id !== id);
+  favorites = favorites.filter(f => f !== id);
+  localStorage.setItem('thai_favs', JSON.stringify(favorites));
+  showToast('Đã xóa từ');
+  updateStats();
+  renderAdminList(allWords);
+}
+
+let adminFiltered = [];
+function filterAdminList(q) {
+  q = (q || '').toLowerCase();
+  const filtered = q
+    ? allWords.filter(w => w.thai.includes(q) || (w.meanings||[]).some(m => m.toLowerCase().includes(q)))
+    : allWords;
+  renderAdminList(filtered);
+}
+
+function renderAdminList(list) {
+  adminFiltered = list;
+  document.getElementById('adminList').innerHTML = list.length
+    ? list.map(w => `
+      <div class="wla-row" id="wla-${w.id}">
+        <div class="wla-thai">${w.thai}</div>
+        <span class="wla-type">${w.type||''}</span>
+        <div class="wla-viet">${(w.meanings||[])[0]||''}</div>
+        <div class="wla-actions">
+          <button class="btn-small edit" title="Chỉnh sửa" onclick="openEditModal(${w.id})">✏️</button>
+          <button class="btn-small del" title="Xóa" onclick="deleteWord(${w.id})">🗑️</button>
+        </div>
+      </div>
+    `).join('')
+    : '<div class="loading-bar">Không có từ nào</div>';
+}
+
+// Edit word
+function openEditModal(id) {
+  const w = allWords.find(x => x.id === id);
+  if (!w) return;
+  document.getElementById('editId').value = id;
+  document.getElementById('editThai').value = w.thai || '';
+  document.getElementById('editPhonetic').value = w.phonetic || '';
+  document.getElementById('editType').value = w.type || 'danh từ';
+  document.getElementById('editMeaning').value = (w.meanings || []).join(', ');
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('show');
+}
+
+async function saveEdit() {
+  const id = parseInt(document.getElementById('editId').value);
+  const thai = document.getElementById('editThai').value.trim();
+  const phonetic = document.getElementById('editPhonetic').value.trim();
+  const type = document.getElementById('editType').value;
+  const meaningsRaw = document.getElementById('editMeaning').value.trim();
+  if (!thai) { showToast('⚠️ Vui lòng nhập từ tiếng Thái'); return; }
+  const meanings = meaningsRaw.split(',').map(m => m.trim()).filter(Boolean);
+  const btn = document.getElementById('btnSaveEdit');
+  btn.disabled = true; btn.textContent = 'Đang lưu...';
+  try {
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/words?id=eq.' + id, {
+      method: 'PATCH',
+      headers: { ...headers, 'Prefer': 'return=representation' },
+      body: JSON.stringify({ thai, phonetic: phonetic || null, type, meanings })
+    });
+    if (resp.ok) {
+      const idx = allWords.findIndex(x => x.id === id);
+      if (idx >= 0) allWords[idx] = { ...allWords[idx], thai, phonetic, type, meanings };
+      closeEditModal();
+      showToast('✅ Đã cập nhật từ: ' + thai);
+      renderAdminList(allWords);
+    } else { showToast('⚠️ Lỗi khi cập nhật'); }
+  } catch(e) { showToast('⚠️ Lỗi kết nối'); }
+  btn.disabled = false; btn.textContent = 'Lưu thay đổi';
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allWords.length;
+  document.getElementById('statFav').textContent = favorites.length;
+  document.getElementById('statRecent').textContent = recentSearches.length;
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+
+// ── DARK MODE ─────────────────────────────────────────
+function toggleDark() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  document.getElementById('darkModeBtn').textContent = isDark ? '🌙' : '☀️';
+}
+function initTheme() {
+  const saved = localStorage.getItem('theme') || 'light';
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    const btn = document.getElementById('darkModeBtn');
+    if (btn) btn.textContent = '☀️';
+  }
+}
+
+// ── QUOTE ─────────────────────────────────────────────
+async function loadQuote() {
+  const fallbackText = 'Học một ngôn ngữ mới là mở ra một cánh cửa mới nhìn ra thế giới.';
+  const fallbackAuthor = '— Frank Smith';
+  try {
+    const quotes = await sbGet('quotes?select=*&order=id.asc');
+    if (Array.isArray(quotes) && quotes.length) {
+      const idx = new Date().getDate() % quotes.length;
+      const q = quotes[idx];
+      document.getElementById('quoteText').innerHTML = q.text || fallbackText;
+      document.getElementById('quoteAuthor').textContent = q.author ? '— ' + q.author : '';
+    } else {
+      document.getElementById('quoteText').textContent = fallbackText;
+      document.getElementById('quoteAuthor').textContent = fallbackAuthor;
+    }
+  } catch(e) {
+    document.getElementById('quoteText').textContent = fallbackText;
+    document.getElementById('quoteAuthor').textContent = fallbackAuthor;
+  }
+}
+
+// ── SCROLL → STICKY SEARCH ───────────────────────────
+const heroEl = document.querySelector('.hero');
+const headerSearchWrap = document.getElementById('headerSearchWrap');
+const mainHeader = document.getElementById('mainHeader');
+
+window.addEventListener('scroll', () => {
+  if (!heroEl) return;
+  const heroBottom = heroEl.getBoundingClientRect().bottom;
+  const show = heroBottom < 10;
+  headerSearchWrap.classList.toggle('visible', show);
+  mainHeader.classList.toggle('scrolled', show);
+});
+
+// Header search handlers
+let headerAcResults = [], headerAcIndex = -1;
+function onHeaderSearch(val) {
+  val = val.trim();
+  const ac = document.getElementById('headerAc');
+  if (!val) { ac.classList.remove('show'); headerAcResults = []; return; }
+  const q = val.toLowerCase();
+  headerAcResults = allWords.filter(w =>
+    w.thai.includes(val) ||
+    (w.phonetic && w.phonetic.toLowerCase().includes(q)) ||
+    (w.meanings && w.meanings.some(m => m.toLowerCase().includes(q)))
+  ).slice(0, 6);
+  if (!headerAcResults.length) { ac.classList.remove('show'); return; }
+  ac.innerHTML = headerAcResults.map((w, i) => `
+    <div class="ac-item" onmousedown="selectWordFromHeader(${w.id})">
+      <div>
+        <div class="ac-thai">${w.thai}</div>
+        <div class="ac-phonetic">${w.phonetic || ''}</div>
+      </div>
+      <span class="ac-type">${w.type || ''}</span>
+      <div class="ac-viet">${(w.meanings || [])[0] || ''}</div>
+    </div>
+  `).join('');
+  ac.classList.add('show');
+  headerAcIndex = -1;
+}
+
+function onHeaderKeydown(e) {
+  if (e.key === 'Enter') {
+    if (headerAcResults.length) selectWordFromHeader(headerAcResults[0].id);
+  } else if (e.key === 'Escape') {
+    document.getElementById('headerAc').classList.remove('show');
+  }
+}
+
+function doHeaderSearch() {
+  if (headerAcResults.length) selectWordFromHeader(headerAcResults[0].id);
+}
+
+function selectWordFromHeader(id) {
+  document.getElementById('headerAc').classList.remove('show');
+  document.getElementById('headerSearchInput').value = '';
+  showPage('home');
+  selectWord(id);
+  // scroll to top smoothly
+  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+}
+
+// ── THAI KEYBOARD ─────────────────────────────────────
+// TIS 820-2531 standard layout
+const TIS_NORMAL = [
+  [
+    {m:'ๅ',s:'๑'},{m:'/',s:'๒'},{m:'-',s:'๓'},{m:'ภ',s:'๔'},
+    {m:'ถ',s:'ู'},{m:'ุ',s:'฿'},{m:'ึ',s:'๕'},{m:'ค',s:'๖'},
+    {m:'ต',s:'๗'},{m:'จ',s:'๘'},{m:'ข',s:'๙'},{m:'ช',s:'๐'},
+  ],
+  [
+    {m:'ๆ',s:'๐'},{m:'ไ',s:'ๅ'},{m:'ำ',s:'ๆ'},{m:'พ',s:'โ'},
+    {m:'ะ',s:'ฌ'},{m:'ั',s:'็'},{m:'ี',s:'๋'},{m:'ร',s:'ษ'},
+    {m:'น',s:'ซ'},{m:'ย',s:'ศ'},{m:'บ',s:'ซ'},{m:'ล',s:'ฅ'},{m:'ฃ',s:''},
+  ],
+  [
+    {m:'ฟ',s:'ฎ'},{m:'ห',s:'ฑ'},{m:'ก',s:'ธ'},{m:'ด',s:'ํ'},
+    {m:'เ',s:'๊'},{m:'้',s:'ณ'},{m:'่',s:'ฯ'},{m:'า',s:'ญ'},
+    {m:'ส',s:'ฐ'},{m:'ว',s:'ฑ'},{m:'ง',s:'ข'},
+  ],
+  [
+    {m:'ผ',s:'ฉ'},{m:'ป',s:'ฮ'},{m:'แ',s:'ฆ'},{m:'อ',s:'ฑ'},
+    {m:'ิ',s:'ั'},{m:'ื',s:'ั'},{m:'ท',s:'ภ'},{m:'ม',s:'ฒ'},
+    {m:'ใ',s:'ฬ'},{m:'ฝ',s:'ฦ'},
+  ],
+];
+
+let kbdShift = false;
+let kbdTargetId = '';
+let kbdActiveTab = 'tis';
+
+function switchKbdTab(tab) {
+  kbdActiveTab = tab;
+  document.getElementById('kbdTIS').style.display = tab === 'tis' ? '' : 'none';
+  document.getElementById('kbdHW').style.display = tab === 'hw' ? '' : 'none';
+  document.getElementById('tabTIS').classList.toggle('active', tab === 'tis');
+  document.getElementById('tabHW').classList.toggle('active', tab === 'hw');
+  if (tab === 'hw') initCanvas();
+}
+
+function openKeyboard(inputId) {
+  kbdTargetId = inputId;
+  kbdShift = false;
+  renderKeyboard();
+  switchKbdTab('tis');
+  document.getElementById('kbdOverlay').classList.add('show');
+}
+
+function closeKeyboard() {
+  document.getElementById('kbdOverlay').classList.remove('show');
+}
+
+function closeKeyboardOutside(e) {
+  if (e.target === document.getElementById('kbdOverlay')) closeKeyboard();
+}
+
+function renderKeyboard() {
+  const container = document.getElementById('kbdKeys');
+  container.innerHTML = TIS_NORMAL.map((row, ri) => `
+    <div class="kbd-row">
+      ${ri === 0 ? `<button class="kbd-key dark wide" onclick="kbdBS()">⌫</button>` : ''}
+      ${row.map(k => {
+        const ch = kbdShift ? (k.s || k.m) : k.m;
+        const sub = kbdShift ? k.m : k.s;
+        return `<button class="kbd-key" onclick="kbdType('${ch}')">
+          ${ch}${sub ? `<span class="sub">${sub}</span>` : ''}
+        </button>`;
+      }).join('')}
+      ${ri === 0 ? `<button class="kbd-key dark wide" onclick="kbdToggleShift()" style="${kbdShift?'background:#1A73E8;color:#fff':''}">⇧</button>` : ''}
+    </div>
+  `).join('') + `
+    <div class="kbd-row" style="margin-top:4px">
+      <button class="kbd-key dark" onclick="kbdToggleShift()" style="min-width:60px;${kbdShift?'background:#1A73E8;color:#fff':''}">⇧ Shift</button>
+      <button class="kbd-key space-key" onclick="kbdType(' ')">วรรค</button>
+      <button class="kbd-key dark" onclick="kbdClear()" style="min-width:60px">ลบหมด</button>
+      <button class="kbd-key dark" onclick="closeKeyboard()" style="min-width:60px;background:#1A73E8;color:#fff">เสร็จ</button>
+    </div>
+  `;
+}
+
+function kbdType(char) {
+  const el = document.getElementById(kbdTargetId);
+  if (!el) return;
+  el.value += char;
+  el.dispatchEvent(new Event('input'));
+  el.focus();
+}
+function kbdBS() {
+  const el = document.getElementById(kbdTargetId);
+  if (!el) return;
+  el.value = el.value.slice(0, -1);
+  el.dispatchEvent(new Event('input'));
+}
+function kbdClear() {
+  const el = document.getElementById(kbdTargetId);
+  if (!el) return;
+  el.value = '';
+  el.dispatchEvent(new Event('input'));
+}
+function kbdToggleShift() {
+  kbdShift = !kbdShift;
+  renderKeyboard();
+}
+
+// ── HANDWRITING ───────────────────────────────────────
+let hwCanvas, hwCtx, hwDrawing = false, hwTimer;
+// Common Thai characters as suggestions (simulate handwriting recognition)
+const THAI_CHARS_COMMON = [
+  'ก','ข','ค','ง','จ','ช','ซ','ญ','ด','ต','ถ','ท','น','บ','ป',
+  'ผ','พ','ฝ','ฟ','ม','ย','ร','ล','ว','ส','ห','อ','า','ิ','ี','ึ','ื','ุ','ู','เ','แ','โ','ใ','ไ'
+];
+
+function initCanvas() {
+  hwCanvas = document.getElementById('handwriteCanvas');
+  if (!hwCanvas) return;
+  hwCtx = hwCanvas.getContext('2d');
+  hwCtx.strokeStyle = '#1A73E8';
+  hwCtx.lineWidth = 3;
+  hwCtx.lineCap = 'round';
+  hwCtx.lineJoin = 'round';
+  clearCanvas();
+
+  hwCanvas.addEventListener('mousedown', startDraw);
+  hwCanvas.addEventListener('mousemove', draw);
+  hwCanvas.addEventListener('mouseup', endDraw);
+  hwCanvas.addEventListener('mouseleave', endDraw);
+  hwCanvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(e.touches[0]); }, {passive:false});
+  hwCanvas.addEventListener('touchmove', e => { e.preventDefault(); draw(e.touches[0]); }, {passive:false});
+  hwCanvas.addEventListener('touchend', endDraw);
+}
+
+function getPos(e) {
+  const r = hwCanvas.getBoundingClientRect();
+  const scaleX = hwCanvas.width / r.width;
+  const scaleY = hwCanvas.height / r.height;
+  return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+}
+
+function startDraw(e) { hwDrawing = true; const p = getPos(e); hwCtx.beginPath(); hwCtx.moveTo(p.x, p.y); }
+function draw(e) {
+  if (!hwDrawing) return;
+  const p = getPos(e);
+  hwCtx.lineTo(p.x, p.y);
+  hwCtx.stroke();
+  clearTimeout(hwTimer);
+  hwTimer = setTimeout(showHWResults, 600);
+}
+function endDraw() { hwDrawing = false; }
+
+function clearCanvas() {
+  if (!hwCtx) return;
+  hwCtx.clearRect(0, 0, hwCanvas.width, hwCanvas.height);
+  hwCtx.fillStyle = '#fff';
+  hwCtx.fillRect(0, 0, hwCanvas.width, hwCanvas.height);
+  document.getElementById('hwResults').innerHTML = '<span style="font-size:13px;color:#8E8E93">Viết ký tự để xem gợi ý...</span>';
+}
+
+function showHWResults() {
+  // Simulate suggestions: show random thai chars as candidates
+  const shuffled = [...THAI_CHARS_COMMON].sort(() => Math.random() - 0.5).slice(0, 8);
+  document.getElementById('hwResults').innerHTML = shuffled.map(c =>
+    `<button class="hw-result-btn" onclick="hwSelect('${c}')">${c}</button>`
+  ).join('');
+}
+
+function hwSelect(char) {
+  kbdType(char);
+  clearCanvas();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#headerSearchWrap')) {
+    document.getElementById('headerAc').classList.remove('show');
+  }
+  if (!e.target.closest('.search-wrap') && !e.target.closest('#autocomplete')) {
+    document.getElementById('autocomplete').classList.remove('show');
+  }
+});
+
+// ── FOOTER CLOCK ─────────────────────────────────────
+const THAI_DIGITS = ['๐','๑','๒','๓','๔','๕','๖','๗','๘','๙'];
+const THAI_DAYS = ['วันอาทิตย์','วันจันทร์','วันอังคาร','วันพุธ','วันพฤหัสบดี','วันศุกร์','วันเสาร์'];
+const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const VIET_DAYS = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+
+function toThaiDigits(n) {
+  return String(n).split('').map(d => THAI_DIGITS[parseInt(d)] ?? d).join('');
+}
+
+function getThaiTime(h, m) {
+  // Thai time description: เช้า/บ่าย/เย็น/ค่ำ
+  let period = '', thaiH = h;
+  if (h === 0) { period = 'เที่ยงคืน'; thaiH = 0; }
+  else if (h < 7) { period = 'ตี'; thaiH = h; }
+  else if (h < 12) { period = 'โมงเช้า'; thaiH = h === 7 ? 1 : h - 6; }
+  else if (h === 12) { period = 'เที่ยง'; thaiH = 0; }
+  else if (h < 13) { period = 'บ่ายโมง'; thaiH = 0; }
+  else if (h < 18) { period = 'บ่าย'; thaiH = h - 12; }
+  else if (h < 19) { period = 'เย็น'; thaiH = h - 12; }
+  else { period = 'ทุ่ม'; thaiH = h - 18; }
+
+  const minStr = m > 0 ? ` ${toThaiDigits(m)}นาที` : '';
+
+  if (h === 0 || h === 12) {
+    return period + (m > 0 ? minStr : '');
+  }
+  if (h < 7) {
+    return `${period}${toThaiDigits(thaiH)}` + minStr;
+  }
+  if (h < 12) {
+    return `${toThaiDigits(thaiH)}${period}` + minStr;
+  }
+  if (h === 13) {
+    return 'บ่ายโมง' + minStr;
+  }
+  if (h < 18) {
+    return `${period}${toThaiDigits(thaiH)}โมง` + minStr;
+  }
+  return `${toThaiDigits(thaiH)}${period}` + minStr;
+}
+
+function updateClock() {
+  const now = new Date();
+  const d = now.getDay(), date = now.getDate(),
+        mo = now.getMonth(), y = now.getFullYear(),
+        h = now.getHours(), m = now.getMinutes();
+
+  // Thai format
+  const thaiYear = y + 543;
+  const thaiTime = getThaiTime(h, m);
+  const thaiStr = `${THAI_DAYS[d]}ที่ ${toThaiDigits(date)} ${THAI_MONTHS[mo]} พ.ศ. ${toThaiDigits(thaiYear)} เวลา ${thaiTime}`;
+
+  // Vietnamese format
+  const pad = n => String(n).padStart(2, '0');
+  const vietStr = `${VIET_DAYS[d]}, ${date} tháng ${mo + 1} năm ${y} - ${pad(h)}:${pad(m)}`;
+
+  document.getElementById('footerClock').innerHTML = `
+    <div class="clock-thai">${thaiStr}</div>
+    <div class="clock-viet">${vietStr}</div>
+  `;
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+async function saveQuote() {
+  const text = document.getElementById('quoteInput').innerHTML.trim();
+  const author = document.getElementById('quoteAuthorInput').value.trim();
+  if (!text) { showToast('⚠️ Nhập nội dung câu quote'); return; }
+  try {
+    await sbPost('quotes', { text, author });
+    showToast('✅ Đã lưu câu quote!');
+    document.getElementById('quoteInput').innerHTML = '';
+    document.getElementById('quoteAuthorInput').value = '';
+    loadQuote();
+  } catch(e) { showToast('⚠️ Lỗi — cần tạo bảng quotes trong Supabase'); }
+}
+
+// ── DEF BUILDER ───────────────────────────────────────
+const WORD_TYPES = ['Danh từ','Động từ','Tính từ','Thán từ','Trạng từ','Giới từ','Liên từ','Đại từ','Thành ngữ'];
+let defBlocks = [];
+let defIdCounter = 0;
+
+function addDefBlock() {
+  const id = defIdCounter++;
+  defBlocks.push(id);
+  const list = document.getElementById('defBuilderList');
+  const div = document.createElement('div');
+  div.className = 'def-builder';
+  div.id = 'def-' + id;
+  div.innerHTML = `
+    <div class="def-builder-header">
+      <span class="def-builder-title">Định nghĩa ${defBlocks.indexOf(id)+1}</span>
+      <select style="padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;background:var(--surface);outline:none" id="dtype-${id}">
+        ${WORD_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('')}
+      </select>
+      <button class="btn-remove" onclick="removeDefBlock(${id})" title="Xóa">✕</button>
+    </div>
+    <div class="def-builder-body">
+      <div class="form-group">
+        <label class="form-label">Định nghĩa tiếng Thái</label>
+        <div class="rte-wrap">
+          <div class="rte-toolbar">
+            <button class="rte-btn" onclick="rteCmd('bold',this)" title="Bold"><b>B</b></button>
+            <button class="rte-btn" onclick="rteCmd('italic',this)" title="Italic"><i>I</i></button>
+            <button class="rte-btn" onclick="rteCmd('underline',this)" title="Underline"><u>U</u></button>
+          </div>
+          <div class="rte-area" data-lang="thai" contenteditable="true" id="dthai-${id}" placeholder="กรอกความหมายภาษาไทย..."></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Định nghĩa tiếng Việt</label>
+        <div class="rte-wrap">
+          <div class="rte-toolbar">
+            <button class="rte-btn" onclick="rteCmd('bold',this)" title="Bold"><b>B</b></button>
+            <button class="rte-btn" onclick="rteCmd('italic',this)" title="Italic"><i>I</i></button>
+            <button class="rte-btn" onclick="rteCmd('underline',this)" title="Underline"><u>U</u></button>
+          </div>
+          <div class="rte-area" contenteditable="true" id="dviet-${id}" placeholder="Nhập nghĩa tiếng Việt..."></div>
+        </div>
+      </div>
+      <div class="def-ex-builder">
+        <div class="def-ex-builder-title">Ví dụ câu</div>
+        <div id="exlist-${id}"></div>
+        <button class="btn-add-ex" onclick="addExRow(${id})">+ Thêm ví dụ</button>
+      </div>
+    </div>
+  `;
+  list.appendChild(div);
+  addExRow(id);
+}
+
+function removeDefBlock(id) {
+  defBlocks = defBlocks.filter(b => b !== id);
+  document.getElementById('def-' + id)?.remove();
+}
+
+let exCounter = 0;
+function addExRow(defId) {
+  const eid = exCounter++;
+  const list = document.getElementById('exlist-' + defId);
+  const row = document.createElement('div');
+  row.className = 'ex-row';
+  row.id = 'ex-' + eid;
+  row.innerHTML = `
+    <div class="rte-wrap">
+      <div class="rte-toolbar">
+        <button class="rte-btn" onclick="rteCmd('bold',this)"><b>B</b></button>
+        <button class="rte-btn" onclick="rteCmd('italic',this)"><i>I</i></button>
+      </div>
+      <div class="rte-area" data-lang="thai" contenteditable="true" style="min-height:50px" placeholder="ประโยคตัวอย่าง..."></div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:flex-start">
+      <div class="rte-wrap" style="flex:1">
+        <div class="rte-toolbar">
+          <button class="rte-btn" onclick="rteCmd('bold',this)"><b>B</b></button>
+          <button class="rte-btn" onclick="rteCmd('italic',this)"><i>I</i></button>
+        </div>
+        <div class="rte-area" contenteditable="true" style="min-height:50px" placeholder="Câu ví dụ tiếng Việt..."></div>
+      </div>
+      <button class="btn-remove" onclick="document.getElementById('ex-${eid}').remove()" style="margin-top:36px">✕</button>
+    </div>
+  `;
+  list.insertBefore(row, list.lastElementChild);
+}
+
+function rteCmd(cmd, btn) {
+  document.execCommand(cmd, false, null);
+  btn.classList.toggle('active');
+}
+
+function getDefData() {
+  return defBlocks.map(id => {
+    const thaiEl = document.getElementById('dthai-' + id);
+    const vietEl = document.getElementById('dviet-' + id);
+    const type = document.getElementById('dtype-' + id)?.value || '';
+    const exRows = document.getElementById('exlist-' + id)?.querySelectorAll('.ex-row') || [];
+    const examples = [];
+    exRows.forEach(row => {
+      const areas = row.querySelectorAll('.rte-area');
+      if (areas.length >= 2) {
+        const t = areas[0].innerHTML.trim();
+        const v = areas[1].innerHTML.trim();
+        if (t || v) examples.push({ thai: t, viet: v });
+      }
+    });
+    return {
+      type,
+      thai_meaning: thaiEl?.innerHTML.trim() || '',
+      viet_meaning: vietEl?.innerHTML.trim() || '',
+      examples
+    };
+  }).filter(d => d.thai_meaning || d.viet_meaning);
+}
+
+// ── ADMIN AUTH ────────────────────────────────────────
+const ADMIN_PASSWORD = 'thai2025'; // ← Đổi mật khẩu ở đây
+const SECRET_KEYS = []; // buffer phím bí mật
+const SECRET_COMBO = 'admin'; // gõ chữ "admin" ở bất kỳ đâu để mở login
+
+let isAdminLoggedIn = sessionStorage.getItem('admin_auth') === '1';
+
+function initAdminState() {
+  if (isAdminLoggedIn) {
+    document.getElementById('adminNavBtn').style.display = '';
+  }
+}
+
+// Lắng nghe gõ phím bí mật
+document.addEventListener('keydown', function(e) {
+  const tag = document.activeElement.tagName;
+  const ce = document.activeElement.contentEditable;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || ce === 'true') return;
+  SECRET_KEYS.push(e.key.toLowerCase());
+  if (SECRET_KEYS.length > SECRET_COMBO.length) SECRET_KEYS.shift();
+  if (SECRET_KEYS.join('') === SECRET_COMBO) {
+    SECRET_KEYS.length = 0;
+    if (!isAdminLoggedIn) openLogin();
+    else showPage('admin');
+  }
+});
+
+function openLogin() {
+  document.getElementById('loginModal').classList.add('show');
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').textContent = '';
+  setTimeout(() => document.getElementById('pwInput').focus(), 100);
+}
+
+function closeLogin() {
+  document.getElementById('loginModal').classList.remove('show');
+}
+
+function checkPassword() {
+  const pw = document.getElementById('pwInput').value;
+  if (pw === ADMIN_PASSWORD) {
+    isAdminLoggedIn = true;
+    sessionStorage.setItem('admin_auth', '1');
+    closeLogin();
+    document.getElementById('adminNavBtn').style.display = '';
+    showPage('admin');
+    showToast('✅ Đăng nhập thành công!');
+  } else {
+    const input = document.getElementById('pwInput');
+    input.classList.add('error');
+    document.getElementById('pwError').textContent = 'Mật khẩu không đúng, thử lại!';
+    setTimeout(() => input.classList.remove('error'), 400);
+    input.value = '';
+    input.focus();
+  }
+}
+
+function logoutAdmin() {
+  isAdminLoggedIn = false;
+  sessionStorage.removeItem('admin_auth');
+  document.getElementById('adminNavBtn').style.display = 'none';
+  showPage('home');
+  showToast('Đã đăng xuất Admin');
+}
+
+
+// ── SEARCH MODE ───────────────────────────────────────
+let searchMode = 'word'; // 'word' | 'popthai'
+
+function switchSearchMode(mode) {
+  searchMode = mode;
+  document.getElementById('modeTabWord').classList.toggle('active', mode === 'word');
+  document.getElementById('modeTabPop').classList.toggle('active', mode === 'popthai');
+  document.getElementById('quickTags').style.display = mode === 'word' ? 'flex' : 'none';
+  document.getElementById('popthaiWrap').classList.toggle('show', mode === 'popthai');
+
+  const searchWrap = document.querySelector('.search-inner');
+  const searchInput = document.getElementById('searchInput');
+  if (mode === 'popthai') {
+    searchWrap.style.display = 'none';
+    document.getElementById('autocomplete').classList.remove('show');
+    document.getElementById('resultSection').classList.remove('show');
+    document.getElementById('homeDefault').style.display = 'none';
+    setTimeout(() => document.getElementById('popthaiInput').focus(), 100);
+  } else {
+    searchWrap.style.display = 'flex';
+    document.getElementById('homeDefault').style.display = 'block';
+    document.getElementById('popthaiWords').style.display = 'none';
+    document.getElementById('ptDefPanel').classList.remove('show');
+  }
+}
+
+// ── POPTHAI ───────────────────────────────────────────
+// Thai word segmentation using greedy longest-match against our dictionary
+function segmentThai(text) {
+  if (!text.trim()) return [];
+  const result = [];
+  let i = 0;
+  const thaiWordSet = new Set(allWords.map(w => w.thai));
+
+  while (i < text.length) {
+    const ch = text[i];
+    // Non-Thai character (space, punctuation, latin)
+    if (ch.charCodeAt(0) < 0x0E00 || ch.charCodeAt(0) > 0x0E7F) {
+      if (ch === ' ' || ch === '
+') {
+        result.push({ thai: ' ', isSpace: true });
+      } else {
+        result.push({ thai: ch, isSpace: false, isLatin: true });
+      }
+      i++;
+      continue;
+    }
+    // Try longest match first (up to 15 chars)
+    let matched = false;
+    for (let len = Math.min(15, text.length - i); len >= 1; len--) {
+      const candidate = text.slice(i, i + len);
+      if (thaiWordSet.has(candidate) || len === 1) {
+        result.push({ thai: candidate, isSpace: false });
+        i += len;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) { result.push({ thai: text[i], isSpace: false }); i++; }
+  }
+  return result;
+}
+
+function runPopthai() {
+  const text = document.getElementById('popthaiInput').value.trim();
+  if (!text) { showToast('⚠️ Vui lòng nhập đoạn văn bản Thái'); return; }
+
+  const segments = segmentThai(text);
+  const wordsEl = document.getElementById('popthaiWords');
+  wordsEl.style.display = 'flex';
+  document.getElementById('ptDefPanel').classList.remove('show');
+
+  // Store segments globally for click access
+  window._ptSegments = segments;
+  wordsEl.innerHTML = segments.map((seg, idx) => {
+    if (seg.isSpace) return '<span class="pt-word space-word"><span class="pt-word-thai">_</span></span>';
+    const word = allWords.find(w => w.thai === seg.thai);
+    const phonetic = word ? (word.phonetic || '') : '';
+    const phoneticHTML = phonetic ? '<span class="pt-word-phonetic">' + phonetic + '</span>' : '';
+    return '<span class="pt-word ' + (word ? '' : 'no-def') + '" id="ptw-' + idx + '" onclick="ptWordClick(' + idx + ')">'
+      + '<span class="pt-word-thai">' + seg.thai + '</span>'
+      + phoneticHTML
+      + '</span>';
+  }).join('');
+}
+
+function ptWordClick(idx) {
+  const seg = window._ptSegments && window._ptSegments[idx];
+  if (!seg || seg.isSpace) return;
+  const thai = seg.thai;
+
+  // Highlight selected
+  document.querySelectorAll('.pt-word').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('ptw-' + idx);
+  if (el) el.classList.add('active');
+
+  const panel = document.getElementById('ptDefPanel');
+  const word = allWords.find(w => w.thai === thai);
+
+  document.getElementById('ptDefThai').textContent = thai;
+
+  if (!word) {
+    document.getElementById('ptDefPhonetic').textContent = '';
+    document.getElementById('ptDefBody').innerHTML = `<div class="pt-not-found">Không tìm thấy "${thai}" trong từ điển</div>`;
+    panel.classList.add('show');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  document.getElementById('ptDefPhonetic').textContent = word.phonetic || '';
+
+  // Show definitions
+  const defs = word.definitions || [];
+  const meanings = word.meanings || [];
+  let bodyHTML = '';
+
+  if (defs.length) {
+    bodyHTML = defs.map((def, i) => `
+      <div class="pt-def-row">
+        <div class="pt-def-num">${i+1}</div>
+        <div class="pt-def-text">
+          ${def.type ? `<span style="font-size:11px;background:var(--thai-gold-light);color:var(--thai-gold-dark);padding:1px 8px;border-radius:99px;margin-right:6px">${def.type}</span>` : ''}
+          ${def.viet_meaning || def.thai_meaning || ''}
+        </div>
+      </div>
+    `).join('');
+  } else if (meanings.length) {
+    bodyHTML = meanings.map((m, i) => `
+      <div class="pt-def-row">
+        <div class="pt-def-num">${i+1}</div>
+        <div class="pt-def-text">${m}</div>
+      </div>
+    `).join('');
+  } else {
+    bodyHTML = `<div class="pt-not-found">Chưa có định nghĩa cho từ này</div>`;
+  }
+
+  document.getElementById('ptDefBody').innerHTML = bodyHTML;
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function quickSearch(term) {
+  document.getElementById('searchInput').value = term;
+  onSearch(term);
+  setTimeout(() => { if (acResults.length) selectWord(acResults[0].id); }, 200);
+}
+function doSearch() {
+  const val = document.getElementById('searchInput').value.trim();
+  if (acResults.length) selectWord(acResults[0].id);
+  else if (val) onSearch(val);
+}
+
+// ── INIT ──────────────────────────────────────────────
+loadWords();
+initAdminState();
+initTheme();
+loadQuote();
+</script>
+</body>
+</html>
