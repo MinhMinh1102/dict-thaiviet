@@ -255,13 +255,28 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
 .search-outer {
   max-width: 620px;
   margin: 0 auto 10px;
-}
-.search-wrap {
   position: relative;
+}
+.search-inner {
   display: flex;
   border: 1.5px solid var(--border);
   border-radius: 40px;
   overflow: hidden;
+  background: var(--surface-card);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s;
+  width: 100%;
+}
+.search-inner:focus-within {
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  border-color: var(--accent);
+}
+.search-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 40px;
+  overflow: visible;
   background: var(--surface-card);
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   transition: box-shadow 0.2s;
@@ -312,7 +327,7 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
 }
 .search-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--thai-gold-light); }
 
-.autocomplete { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; margin-top: 6px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.1); display: none; max-width: 620px; margin-left: auto; margin-right: auto; }
+.autocomplete { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.1); display: none; position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 150; }
 .autocomplete.show { display: block; }
 .ac-item { padding: 10px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; }
 .ac-item:last-child { border-bottom: none; }
@@ -791,15 +806,17 @@ body { transition: background 0.2s, color 0.2s; }
       </div>
       <div class="search-outer">
         <div class="search-wrap">
-          <input class="search-input" id="searchInput" type="text"
-            placeholder="ค้นหาคำศัพท์ · Nhập từ tiếng Thái hoặc tiếng Việt"
-            autocomplete="off" oninput="onSearch(this.value)" onkeydown="onKeydown(event)">
-          <button class="hsearch-icon-btn" onclick="openKeyboard('searchInput')" title="Bàn phím Thái" style="flex-shrink:0">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#9AA0A6" stroke-width="1.5"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M8 17h8" stroke="#9AA0A6" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </button>
-          <button class="search-btn" onclick="doSearch()">🔍</button>
+          <div class="search-inner">
+            <input class="search-input" id="searchInput" type="text"
+              placeholder="ค้นหาคำศัพท์ · Nhập từ tiếng Thái hoặc tiếng Việt"
+              autocomplete="off" oninput="onSearch(this.value)" onkeydown="onKeydown(event)">
+            <button class="hsearch-icon-btn" onclick="openKeyboard('searchInput')" title="Bàn phím Thái" style="flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#9AA0A6" stroke-width="1.5"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M8 17h8" stroke="#9AA0A6" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <button class="search-btn" onclick="doSearch()">🔍</button>
+          </div>
+          <div id="autocomplete" class="autocomplete"></div>
         </div>
-        <div id="autocomplete" class="autocomplete"></div>
         <div class="search-tags" id="quickTags">
           <span class="search-tag" onclick="quickSearch('สวัสดี')">สวัสดี</span>
           <span class="search-tag" onclick="quickSearch('ขอบคุณ')">ขอบคุณ</span>
