@@ -494,7 +494,7 @@ body { font-family: 'Kodchasan', sans-serif; background: var(--surface); color: 
   outline: none; line-height: 1.6;
   color: var(--text-primary);
 }
-.rte-area[data-lang="thai"] { font-family: 'Kodchasan', sans-serif; } /* thai rte */
+.rte-area[data-lang="thai"] { font-family: 'Kodchasan', sans-serif; }
 
 /* Admin def builder */
 .def-builder {
@@ -616,6 +616,7 @@ body { transition: background 0.2s, color 0.2s; }
   font-family: Georgia, serif;
 }
 .quote-text {
+  font-family: 'Kodchasan', sans-serif;
   font-size: 16px;
   font-style: italic;
   color: var(--text-primary);
@@ -2200,62 +2201,52 @@ function switchSearchMode(mode) {
 }
 
 // ── POPTHAI ───────────────────────────────────────────
-// Thai word segmentation using greedy longest-match against our dictionary
-function segmentThai(text) {
-  if (!text.trim()) return [];
-  const result = [];
-  let i = 0;
-  const thaiWordSet = new Set(allWords.map(w => w.thai));
-
-  while (i < text.length) {
-    const ch = text[i];
-    // Non-Thai character (space, punctuation, latin)
-    if (ch.charCodeAt(0) < 0x0E00 || ch.charCodeAt(0) > 0x0E7F) {
-      if (ch === ' ' || ch === '\n') {
-        result.push({ thai: ' ', isSpace: true });
-      } else {
-        result.push({ thai: ch, isSpace: false, isLatin: true });
-      }
-      i++;
-      continue;
-    }
-    // Try longest match first (up to 15 chars)
-    let matched = false;
-    for (let len = Math.min(15, text.length - i); len >= 1; len--) {
-      const candidate = text.slice(i, i + len);
-      if (thaiWordSet.has(candidate) || len === 1) {
-        result.push({ thai: candidate, isSpace: false });
-        i += len;
-        matched = true;
-        break;
-      }
-    }
-    if (!matched) { result.push({ thai: text[i], isSpace: false }); i++; }
-  }
-  return result;
-}
-
-function runPopthai() {
+async function runPopthai() {
   const text = document.getElementById('popthaiInput').value.trim();
   if (!text) { showToast('⚠️ Vui lòng nhập đoạn văn bản Thái'); return; }
 
-  const segments = segmentThai(text);
   const wordsEl = document.getElementById('popthaiWords');
   wordsEl.style.display = 'flex';
+  wordsEl.innerHTML = '<div style="padding:16px;color:var(--text-muted);font-size:14px">🤖 Đang tách từ...</div>';
   document.getElementById('ptDefPanel').classList.remove('show');
 
-  // Store segments globally for click access
+  let segments = [];
+  try {
+    // Call Claude API to segment Thai text
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: 'Tách từ tiếng Thái sau thành từng từ riêng lẻ có nghĩa. Trả về JSON array các từ theo đúng thứ tự, không giải thích gì thêm. Ví dụ: ["รัก","ใคร","ก็","ได้"]. Văn bản: ' + text
+        }]
+      })
+    });
+    const data = await resp.json();
+    const raw = data.content && data.content[0] && data.content[0].text || '[]';
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const words = JSON.parse(cleaned);
+    segments = words.map(w => ({ thai: w.trim(), isSpace: false }));
+  } catch(e) {
+    // Fallback: split by space only
+    segments = text.split(/\s+/).filter(Boolean).map(w => ({ thai: w, isSpace: false }));
+    showToast('⚠️ Dùng tách từ đơn giản (lỗi API)');
+  }
+
   window._ptSegments = segments;
-  wordsEl.innerHTML = segments.map((seg, idx) => {
-    if (seg.isSpace) return '<span class="pt-word space-word"><span class="pt-word-thai">_</span></span>';
+  wordsEl.innerHTML = segments.length ? segments.map((seg, idx) => {
+    if (seg.isSpace) return '';
     const word = allWords.find(w => w.thai === seg.thai);
     const phonetic = word ? (word.phonetic || '') : '';
     const phoneticHTML = phonetic ? '<span class="pt-word-phonetic">' + phonetic + '</span>' : '';
-    return '<span class="pt-word ' + (word ? '' : 'no-def') + '" id="ptw-' + idx + '" onclick="ptWordClick(' + idx + ')">'
+    return '<span class="pt-word" id="ptw-' + idx + '" onclick="ptWordClick(' + idx + ')">'
       + '<span class="pt-word-thai">' + seg.thai + '</span>'
       + phoneticHTML
       + '</span>';
-  }).join('');
+  }).join('') : '<div style="padding:12px;color:var(--text-muted)">Không tách được từ</div>';
 }
 
 function ptWordClick(idx) {
