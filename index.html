@@ -1410,7 +1410,7 @@ async function saveEdit() {
   const btn = document.getElementById('btnSaveEdit');
   btn.disabled = true; btn.textContent = 'Đang lưu...';
   try {
-    const resp = await fetch(\`\${SUPABASE_URL}/rest/v1/words?id=eq.\${id}\`, {
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/words?id=eq.' + id, {
       method: 'PATCH',
       headers: { ...headers, 'Prefer': 'return=representation' },
       body: JSON.stringify({ thai, phonetic: phonetic || null, type, meanings })
