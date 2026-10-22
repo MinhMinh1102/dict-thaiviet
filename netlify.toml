@@ -1,0 +1,48 @@
+# ══════════════════════════════════════════════════════════════════
+# netlify.toml — ALAY
+# Đặt file này ở GỐC REPO, cùng cấp với index.html/app.js/package.json/build.js.
+# ══════════════════════════════════════════════════════════════════
+
+[build]
+  # Mỗi lần deploy, Netlify tự chạy 2 lệnh này trong 1 máy build tạm (không ảnh
+  # hưởng gì đến máy của bạn) — cài esbuild/html-minifier-terser rồi minify
+  # JS/CSS/HTML từ gốc repo sang thư mục dist/, publish thư mục dist/ đó.
+  # Bạn vẫn code/sửa file .html/.css/.js bình thường ở gốc repo như trước giờ —
+  # KHÔNG cần tự tay minify hay build gì trước khi commit + push.
+  command = "npm install && npm run build"
+  publish = "dist"
+
+# ── Cache: tài nguyên KHÔNG có tên file kèm hash (app.js, style.css, modules/*.js
+# vẫn giữ nguyên tên qua mỗi lần deploy) nên cache ở mức vừa phải (1 giờ) + luôn
+# revalidate — trình duyệt vẫn hỏi lại server "còn mới không" (phản hồi 304 rất
+# nhanh, gần như không mất thời gian) thay vì tự ý dùng bản cache có thể đã cũ.
+# Netlify CDN edge của Netlify luôn tự làm mới đúng ngay khi bạn deploy xong (theo
+# tài liệu chính thức), nên rủi ro người dùng bị "kẹt" bản cũ là rất thấp dù có cache.
+# JS: max-age=0 + must-revalidate = trình duyệt LUÔN hỏi lại server (304 nếu chưa đổi, rất nhẹ).
+# Lý do KHÔNG dùng max-age=3600 như CSS: các file trong /modules/*.js được nạp bằng import() động
+# TRONG app.js, không có "?v=" nên không có cách nào ép tải lại — với max-age=3600 trình duyệt dùng
+# thẳng bản cũ trong cache tới 1 giờ mà KHÔNG hỏi server (must-revalidate chỉ có tác dụng SAU khi hết
+# max-age), khiến bản sửa module vừa deploy không hiện ra.
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+# HTML: luôn lấy bản mới nhất (đây là điểm vào — không được cache lâu kẻo người
+# dùng bị kẹt ở bản HTML cũ trỏ tới tên file JS/CSS đã đổi ở lần deploy sau).
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Font .woff2: gần như không bao giờ đổi nội dung sau khi đã tải lên — cache 1 năm,
+# "immutable" báo cho trình duyệt biết khỏi cần hỏi lại server nữa.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

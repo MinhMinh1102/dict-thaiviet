@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dictthaiviet.netlify.app/sitemap.xml

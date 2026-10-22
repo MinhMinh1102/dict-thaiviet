@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Giới thiệu - alay Từ điển Thái Việt</title>
+<meta name="description" content="Giới thiệu về alay, từ điển Thái - Việt trực tuyến miễn phí giúp người Việt học và tra cứu tiếng Thái dễ dàng.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #3D6B85;
+    --accent-hover: #315A70;
+    --link: #2C5064;
+    --canvas-bg: #F2F5F8;
+    --main-container-bg: #FCFCFD;
+    --surface: #FFFFFF;
+    --header-bg: #F2F5F8;
+    --border: #DCE3E8;
+    --text: #1E2A32;
+    --text-secondary: #5C6B75;
+    --text-muted: #7C8A93;
+    --thai-gold-light: #E3ECF1;
+    --card-shadow: 0 2px 8px rgba(36, 55, 99, 0.035);
+    --card-shadow-lg: 0 10px 28px rgba(36, 55, 99, 0.10);
+    --glass-hover: rgba(36, 55, 99, 0.05);
+    --glass-bg-strong: #FFFFFF;
+    --glass-border: transparent;
+    --tabsbar-h: 46px;
+  }
+  [data-theme="dark"] {
+    --accent: #7FB0CC;
+    --accent-hover: #97C1D9;
+    --link: #9BC7DE;
+    --canvas-bg: #171F26;
+    --main-container-bg: #1B242C;
+    --surface: #242F39;
+    --header-bg: #171F26;
+    --border: #2A3742;
+    --text: #EDEAE3;
+    --text-secondary: #A8AFB8;
+    --text-muted: #7C8A99;
+    --thai-gold-light: #1C2E38;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    --card-shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.45);
+    --glass-hover: rgba(255, 255, 255, 0.08);
+    --glass-bg-strong: #242F39;
+    --glass-border: transparent;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Bai Jamjuree', sans-serif;
+    margin: 0; padding: 0;
+    background: var(--canvas-bg); color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    transition: background 0.2s, color 0.2s;
+  }
+  a { color: var(--link); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (min-width: 641px) { body { padding-left: 68px; } }
+
+  /* ── Thanh menu dọc — copy gần như nguyên bộ class/hành vi của .side-menu trang chủ, để bấm
+       vào các icon vẫn có cảm giác đang ở trong alay chứ không phải sang 1 trang tài liệu khác.
+       Những mục cần dữ liệu sống (Thư viện/Lịch sử/Tra từ nhanh/Đề xuất) trỏ thẳng về trang chủ
+       kèm ?open=... để trang chủ tự mở đúng tính năng đó. Dark mode bật/tắt được thật ngay đây. ── */
+  .side-menu {
+    position: fixed; top: 0; left: 0;
+    width: 68px; height: 100vh;
+    background: var(--header-bg);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0 18px; gap: 4px;
+    z-index: 200; box-sizing: border-box;
+  }
+  .side-menu-logo {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent; cursor: pointer; text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .side-menu-logo:hover { background: var(--glass-hover); transform: scale(1.06); }
+  .side-menu-logo img { width: 30px; height: 30px; object-fit: contain; display: block; }
+  .side-menu-spacer { flex: 1; }
+  .side-nav-btn {
+    width: 44px; height: 44px;
+    padding: 0; border-radius: 12px;
+    font-size: 14px; font-family: inherit; cursor: pointer;
+    border: none; background: transparent; color: var(--text-secondary); text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .side-nav-btn:hover { background: var(--glass-hover); }
+  .side-nav-label { display: none; }
+  .account-avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-size: 13px; font-weight: 700;
+    align-items: center; justify-content: center;
+    font-family: inherit; text-transform: uppercase;
+  }
+
+  .side-menu-hamburger {
+    display: none;
+    position: fixed; top: 14px; left: 14px; z-index: 202;
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg-strong); color: var(--text);
+    align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: var(--card-shadow);
+  }
+  .side-menu-backdrop {
+    display: none; position: fixed; inset: 0; z-index: 199;
+    background: rgba(15, 15, 20, 0.35);
+  }
+  .side-menu-backdrop.show { display: block; }
+
+  .policy-toc-toggle {
+    display: none;
+    position: fixed; top: 14px; right: 14px; z-index: 202;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--glass-bg-strong); box-shadow: var(--card-shadow); border: none;
+    color: var(--text-secondary); cursor: pointer;
+    align-items: center; justify-content: center;
+  }
+
+  @media (max-width: 640px) {
+    .side-menu-hamburger { display: flex; }
+    .side-menu {
+      width: 230px; align-items: stretch;
+      padding: 60px 10px 18px;
+      left: -230px;
+      transition: left 0.25s ease;
+      box-shadow: var(--card-shadow-lg);
+    }
+    .side-menu.open { left: 0; }
+    .side-menu-logo { align-self: center; margin-bottom: 6px; }
+    .side-nav-btn { width: 100%; height: auto; padding: 10px 12px; justify-content: flex-start; border-radius: 10px; }
+    .side-nav-label { display: inline; margin-left: 12px; font-size: 15px; font-weight: 500; }
+    body { padding-left: 0; }
+  }
+
+  .policy-frame {
+    max-width: 1440px; margin: 20px auto 8px; padding: 1.25rem 1.5rem 2rem;
+    width: calc(100% - 64px); flex: 1;
+    background: var(--main-container-bg);
+    border-radius: 24px;
+    box-sizing: border-box;
+  }
+  @media (max-width: 640px) {
+    .policy-frame { margin: 10px auto 6px; padding: 1rem 1rem 1.5rem; border-radius: 18px; width: calc(100% - 32px); }
+  }
+
+  .policy-tabs {
+    position: sticky; top: 0; z-index: 20;
+    height: var(--tabsbar-h);
+    display: flex; gap: 4px; overflow-x: auto;
+    background: var(--main-container-bg); border-bottom: 1px solid var(--border);
+    margin: -1.25rem -1.5rem 0.5rem; padding: 0 1.5rem;
+    border-radius: 24px 24px 0 0;
+    scrollbar-width: none;
+  }
+  .policy-tabs::-webkit-scrollbar { display: none; }
+  .policy-tabs a {
+    flex-shrink: 0; display: flex; align-items: center;
+    padding: 0 14px; margin-bottom: -1px;
+    font-size: 14.5px; color: var(--text-secondary); text-decoration: none;
+    border-bottom: 3px solid transparent; white-space: nowrap;
+  }
+  .policy-tabs a:hover { color: var(--text); }
+  .policy-tabs a.active { color: var(--accent); font-weight: 600; border-bottom-color: var(--accent); }
+  @media (max-width: 640px) {
+    .policy-tabs { margin: -1rem -1rem 0.5rem; padding: 0 1rem; border-radius: 18px 18px 0 0; }
+  }
+
+  .policy-shell { display: flex; align-items: flex-start; gap: 8px; }
+  .policy-backdrop {
+    display: none; position: fixed; inset: 0; z-index: 24;
+    background: rgba(20, 28, 34, 0.4);
+  }
+  .policy-backdrop.show { display: block; }
+
+  .policy-sidebar {
+    width: 258px; flex-shrink: 0;
+    position: sticky; top: var(--tabsbar-h);
+    height: calc(100vh - var(--tabsbar-h) - 20px);
+    overflow-y: auto;
+    padding: 18px 6px 30px 0;
+  }
+  .policy-toc { display: flex; flex-direction: column; gap: 2px; }
+  .policy-toc-link {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 6px 8px; border-radius: 8px;
+    font-size: 13.5px; line-height: 1.4; color: var(--text-secondary); text-decoration: none;
+  }
+  .policy-toc-link:hover { background: var(--glass-hover); }
+  .policy-toc-num {
+    flex-shrink: 0; width: 19px; height: 19px; margin-top: 1px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10.5px; font-weight: 600; color: var(--text-muted);
+    border: 1.5px solid var(--border);
+  }
+  .policy-toc-link.active { color: var(--accent); font-weight: 600; }
+  .policy-toc-link.active .policy-toc-num { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .policy-main {
+    flex: 1; min-width: 0;
+    max-width: 660px; padding: 18px 4px 40px 8px;
+  }
+  h1 { font-size: 27px; margin-bottom: 0.3em; }
+  .updated { font-size: 13px; color: var(--text-muted); margin-bottom: 2em; }
+  h2 {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 18px; margin-top: 2.2em; color: var(--accent);
+    scroll-margin-top: calc(var(--tabsbar-h) + 14px);
+  }
+  .policy-h2-num {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px; font-weight: 700; color: #fff;
+    background: var(--accent);
+  }
+  h3 { font-size: 15.5px; margin-top: 1.3em; margin-bottom: 0.3em; color: var(--text); font-weight: 600; scroll-margin-top: calc(var(--tabsbar-h) + 14px); }
+  p { font-size: 15px; color: var(--text-secondary); }
+  .lead { font-size: 16.5px; color: var(--text); }
+  ul { padding-left: 1.3em; }
+  li { font-size: 15px; color: var(--text-secondary); margin-bottom: 6px; }
+
+  .contact-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 24px; margin: 1.5rem 0; display: flex; align-items: center; gap: 14px;
+  }
+  .contact-icon { font-size: 26px; }
+  .contact-card div strong { display: block; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  .contact-card div a { font-size: 15.5px; font-weight: 600; text-decoration: none; }
+
+  footer {
+    background: var(--canvas-bg);
+    text-align: center; padding: 12px 1.5rem 16px; font-size: 12.5px; color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  #footerClock { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .clock-thai { font-family: 'Bai Jamjuree', sans-serif; font-size: 16px; color: var(--text-secondary); font-weight: 400; letter-spacing: 0.3px; }
+  .clock-viet { font-size: 14px; color: var(--text-muted); font-weight: 300; }
+
+  @media (max-width: 900px) {
+    .policy-toc-toggle { display: flex; }
+    .policy-sidebar {
+      position: fixed; top: 0; left: 0; z-index: 25;
+      height: 100vh; width: 78vw; max-width: 300px;
+      background: var(--surface);
+      box-shadow: var(--card-shadow-lg);
+      transform: translateX(-100%);
+      transition: transform 0.22s ease;
+      padding: calc(var(--tabsbar-h) + 20px) 14px 30px 20px;
+    }
+    .policy-sidebar.open { transform: translateX(0); }
+    .policy-main { padding: 1.25rem 0.5rem 3rem; max-width: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="side-menu" id="sideMenu">
+  <a class="side-menu-logo" href="index.html" title="Về trang chủ">
+    <img src="/images/logo-menu.png" alt="alay">
+  </a>
+
+  <a class="side-nav-btn" href="index.html?open=search" title="Tra từ nhanh (Ctrl/Cmd+K)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7.5"/><path d="m20 20-3.5-3.5"/></svg>
+    <span class="side-nav-label">Tra từ nhanh</span>
+  </a>
+
+  <a class="side-nav-btn" href="index.html" title="Trang chủ">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    <span class="side-nav-label">Trang chủ</span>
+  </a>
+  <a class="side-nav-btn" href="index.html?open=favorites" title="Thư viện" style="margin-top:18px">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="18" x="3" y="3" rx="1"/><path d="M7 3v18"/><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"/></svg>
+    <span class="side-nav-label">Thư viện</span>
+  </a>
+  <a class="side-nav-btn" href="index.html?open=history" title="Lịch sử">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+    <span class="side-nav-label">Lịch sử</span>
+  </a>
+
+  <a class="side-nav-btn" href="index.html?open=suggest" title="Đề xuất từ mới">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    <span class="side-nav-label">Đề xuất từ mới</span>
+  </a>
+
+  <div class="side-menu-spacer"></div>
+
+  <button type="button" class="side-nav-btn" id="policyDarkModeBtn" title="Dark/Light mode">
+    <svg id="policyIconDark" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg id="policyIconLight" width="20" height="20" viewBox="0 0 24 24" fill="none" style="display:none"><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="side-nav-label">Giao diện</span>
+  </button>
+
+  <a class="side-nav-btn" href="index.html" id="policyAccountBtn" title="Tài khoản">
+    <svg id="policyAccountIconGuest" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/></svg>
+    <span class="account-avatar" id="policyAccountAvatar" style="display:none"></span>
+    <span class="side-nav-label">Tài khoản</span>
+  </a>
+</nav>
+<button type="button" class="side-menu-hamburger" id="sideMenuHamburger" aria-label="Mở menu">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<div class="side-menu-backdrop" id="sideMenuBackdrop"></div>
+
+<button type="button" class="policy-toc-toggle" id="policyTocToggle" aria-label="Mở mục lục" aria-expanded="false">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</button>
+
+<div class="policy-backdrop" id="policyBackdrop"></div>
+
+<div class="policy-frame">
+  <nav class="policy-tabs" aria-label="Các trang chính sách">
+    <a href="about.html" class="active" aria-current="page">Giới thiệu</a>
+    <a href="contact.html">Liên hệ</a>
+    <a href="privacy.html">Chính sách Bảo mật</a>
+    <a href="terms.html">Điều khoản Sử dụng</a>
+  </nav>
+
+  <div class="policy-shell">
+    <aside class="policy-sidebar" id="policySidebar">
+      <nav class="policy-toc" id="policyToc" aria-label="Mục lục trang"></nav>
+    </aside>
+
+    <main class="policy-main">
+    <h1>Giới thiệu về alay</h1>
+    <p class="lead">alay là từ điển Thái – Việt trực tuyến, miễn phí, được xây dựng để giúp người Việt học tiếng Thái, và người học tiếng Việt gốc Thái tra cứu từ vựng một cách nhanh chóng, chính xác và dễ tiếp cận.</p>
+
+    <h2>Vì sao chúng tôi tạo ra alay</h2>
+    <p>Tiếng Thái là một trong những ngôn ngữ có hệ thống chữ viết và thanh điệu khá phức tạp đối với người Việt mới bắt đầu học. Phần lớn các công cụ tra từ Thái - Việt hiện có trên internet đã cũ, thiếu ví dụ minh họa, hoặc không hỗ trợ phiên âm rõ ràng. alay ra đời nhằm lấp đầy khoảng trống đó, với một giao diện hiện đại, dễ dùng trên cả máy tính lẫn điện thoại.</p>
+
+    <h2>Những gì alay cung cấp</h2>
+    <ul>
+      <li>Tra cứu từ vựng Thái - Việt với phiên âm, loại từ, cấu tạo từ và ví dụ minh họa cụ thể</li>
+      <li>Phát âm từ tiếng Thái bằng công nghệ chuyển văn bản thành giọng nói</li>
+      <li>Tính năng tách từ (PopThai) giúp phân tích câu tiếng Thái dài thành từng từ đơn</li>
+      <li>Bàn phím ảo tiếng Thái cho người dùng chưa quen với bàn phím vật lý</li>
+      <li>Lưu từ yêu thích và lịch sử tra cứu, đồng bộ theo tài khoản cá nhân</li>
+      <li>Đồng nghĩa, trái nghĩa và thành ngữ liên quan đến từ đang tra cứu</li>
+    </ul>
+
+    <h2>Đối tượng sử dụng</h2>
+    <p>alay phù hợp với học sinh, sinh viên, người lao động, hướng dẫn viên du lịch, và bất kỳ ai đang học tiếng Thái hoặc cần tra cứu từ vựng Thái - Việt trong công việc và cuộc sống hàng ngày.</p>
+
+    <h2>Cam kết của chúng tôi</h2>
+    <p>Chúng tôi liên tục cập nhật và mở rộng kho từ vựng, sửa lỗi và cải thiện trải nghiệm người dùng dựa trên phản hồi thực tế. alay sẽ luôn miễn phí cho người dùng cá nhân.</p>
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div id="footerClock"></div>
+</footer>
+
+<script>
+(function() {
+  if (localStorage.getItem('theme') === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+  function updateDarkIcon() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var iconDark = document.getElementById('policyIconDark');
+    var iconLight = document.getElementById('policyIconLight');
+    if (iconDark) iconDark.style.display = dark ? 'none' : '';
+    if (iconLight) iconLight.style.display = dark ? '' : 'none';
+  }
+  updateDarkIcon();
+  var darkBtn = document.getElementById('policyDarkModeBtn');
+  if (darkBtn) {
+    darkBtn.addEventListener('click', function() {
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      updateDarkIcon();
+    });
+  }
+
+  try {
+    var rawSession = localStorage.getItem('thai_session') || sessionStorage.getItem('thai_session');
+    var session = rawSession ? JSON.parse(rawSession) : null;
+    if (session && session.access_token && session.user) {
+      var guestIcon = document.getElementById('policyAccountIconGuest');
+      var avatar = document.getElementById('policyAccountAvatar');
+      var name = session.user.display_name || '';
+      var email = session.user.email || '';
+      if (guestIcon) guestIcon.style.display = 'none';
+      if (avatar) { avatar.style.display = 'flex'; avatar.textContent = (name || email).charAt(0) || '?'; }
+      var accountBtn = document.getElementById('policyAccountBtn');
+      if (accountBtn) accountBtn.title = name || email || 'Tài khoản';
+    }
+  } catch (e) { /* không có session hợp lệ thì thôi */ }
+
+  var sideMenu = document.getElementById('sideMenu');
+  var sideBackdrop = document.getElementById('sideMenuBackdrop');
+  var hamburger = document.getElementById('sideMenuHamburger');
+  if (hamburger) {
+    hamburger.addEventListener('click', function() {
+      sideMenu.classList.toggle('open');
+      sideBackdrop.classList.toggle('show');
+    });
+    sideBackdrop.addEventListener('click', function() {
+      sideMenu.classList.remove('open');
+      sideBackdrop.classList.remove('show');
+    });
+  }
+
+  var THAI_DAYS = ['วันอาทิตย์','วันจันทร์','วันอังคาร','วันพุธ','วันพฤหัสบดี','วันศุกร์','วันเสาร์'];
+  var THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  var VIET_DAYS = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+  var THAI_DIGITS = ['๐','๑','๒','๓','๔','๕','๖','๗','๘','๙'];
+  function toThaiDigits(n) {
+    return String(n).split('').map(function(d) { var v = THAI_DIGITS[parseInt(d, 10)]; return v === undefined ? d : v; }).join('');
+  }
+  function getThaiTime(h, m) {
+    var period = '', thaiH = h;
+    if (h === 0) { period = 'เที่ยงคืน'; thaiH = 0; }
+    else if (h < 7) { period = 'ตี'; thaiH = h; }
+    else if (h < 12) { period = 'โมงเช้า'; thaiH = h === 7 ? 1 : h - 6; }
+    else if (h === 12) { period = 'เที่ยง'; thaiH = 0; }
+    else if (h < 13) { period = 'บ่ายโมง'; thaiH = 0; }
+    else if (h < 18) { period = 'บ่าย'; thaiH = h - 12; }
+    else if (h < 19) { period = 'เย็น'; thaiH = h - 12; }
+    else { period = 'ทุ่ม'; thaiH = h - 18; }
+    var minStr = m > 0 ? (' ' + toThaiDigits(m) + 'นาที') : '';
+    if (h === 0 || h === 12) return period + (m > 0 ? minStr : '');
+    if (h < 7) return period + toThaiDigits(thaiH) + minStr;
+    if (h < 12) return toThaiDigits(thaiH) + period + minStr;
+    if (h === 13) return 'บ่ายโมง' + minStr;
+    if (h < 18) return period + toThaiDigits(thaiH) + 'โมง' + minStr;
+    return toThaiDigits(thaiH) + period + minStr;
+  }
+  function updateClock() {
+    var now = new Date();
+    var d = now.getDay(), date = now.getDate(), mo = now.getMonth(), y = now.getFullYear(), h = now.getHours(), m = now.getMinutes();
+    var thaiYear = y + 543;
+    var thaiStr = THAI_DAYS[d] + 'ที่ ' + toThaiDigits(date) + ' ' + THAI_MONTHS[mo] + ' พ.ศ. ' + toThaiDigits(thaiYear) + ' เวลา ' + getThaiTime(h, m);
+    var pad = function(n) { return String(n).padStart(2, '0'); };
+    var vietStr = VIET_DAYS[d] + ', ' + date + ' tháng ' + (mo + 1) + ' năm ' + y + ' - ' + pad(h) + ':' + pad(m);
+    var el = document.getElementById('footerClock');
+    if (el) el.innerHTML = '<div class="clock-thai">' + thaiStr + '</div><div class="clock-viet">' + vietStr + '</div>';
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  var main = document.querySelector('.policy-main');
+  var tocEl = document.getElementById('policyToc');
+  var headings = Array.prototype.slice.call(main.querySelectorAll('h2'));
+  var tocHtml = '';
+  headings.forEach(function(h, i) {
+    if (!h.id) h.id = 'section-' + (i + 1);
+    var num = i + 1;
+    var labelText = h.textContent.trim();
+    var numSpan = document.createElement('span');
+    numSpan.className = 'policy-h2-num';
+    numSpan.textContent = num;
+    h.insertBefore(numSpan, h.firstChild);
+    tocHtml += '<a href="#' + h.id + '" class="policy-toc-link"><span class="policy-toc-num">' + num + '</span><span>' + labelText + '</span></a>';
+  });
+  tocEl.innerHTML = tocHtml;
+  var tocLinks = Array.prototype.slice.call(tocEl.querySelectorAll('.policy-toc-link'));
+
+  if ('IntersectionObserver' in window && headings.length) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var link = tocEl.querySelector('a[href="#' + entry.target.id + '"]');
+        if (!link) return;
+        if (entry.isIntersecting) {
+          tocLinks.forEach(function(l) { l.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    headings.forEach(function(h) { observer.observe(h); });
+  }
+
+  var sidebar = document.getElementById('policySidebar');
+  var backdrop = document.getElementById('policyBackdrop');
+  var toggle = document.getElementById('policyTocToggle');
+  function openSidebar() {
+    sidebar.classList.add('open');
+    backdrop.classList.add('show');
+    toggle.setAttribute('aria-expanded', 'true');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('show');
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+  toggle.addEventListener('click', function() {
+    if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
+  });
+  backdrop.addEventListener('click', closeSidebar);
+  tocEl.addEventListener('click', function(e) { if (e.target.closest('a')) closeSidebar(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
+})();
+</script>
+</body>
+</html>

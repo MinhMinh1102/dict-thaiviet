@@ -1,0 +1,9 @@
+# ALAY – rewrite rules cho Netlify
+# File này phải đặt CÙNG CẤP với index.html ở gốc repo (dict-thaiviet/_redirects)
+
+# URL riêng cho từng từ: /tu/<id>-<slug>  →  index.html (200 = rewrite, giữ nguyên URL trên thanh địa chỉ)
+# JS trong index.html sẽ tự đọc /tu/<id>-... để hiển thị đúng từ (xem loadWordFromLocation()).
+/tu/*   /index.html   200
+
+# (Nếu sau này thêm PWA/service worker, không cần thêm rule gì khác ở đây —
+#  sw.js/manifest.json vẫn được serve trực tiếp vì chỉ /tu/* mới bị rewrite)

@@ -1,0 +1,13 @@
+{
+  "name": "dict-thaiviet-build",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Build step tối thiểu cho ALAY: minify JS/CSS/HTML trước khi Netlify deploy — không đổi cách code (vẫn vanilla, không bundler, không framework).",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1",
+    "html-minifier-terser": "^7.2.0"
+  }
+}
