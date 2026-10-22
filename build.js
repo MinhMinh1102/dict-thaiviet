@@ -26,7 +26,8 @@ const OUT_DIR = path.join(__dirname, 'dist');
 // Không copy các thứ này sang dist/ (công cụ build, git, dist cũ...)
 const EXCLUDE_TOP_LEVEL = new Set([
   'node_modules', '.git', '.netlify', 'dist',
-  'package.json', 'package-lock.json', 'build.js', 'netlify.toml', '.gitignore'
+  'package.json', 'package-lock.json', 'build.js', 'netlify.toml', '.gitignore',
+  'netlify' // thư mục netlify/edge-functions/ (mã nguồn edge function): Netlify tự nạp từ gốc repo, không cần (và không nên) công khai trong dist/
 ]);
 
 // File JS KHÔNG minify (giữ nguyên byte-cho-byte) — service worker nhạy cảm với
