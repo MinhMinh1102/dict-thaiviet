@@ -7,7 +7,7 @@
 //
 // Cách làm: hàm này chạy TRƯỚC khi Netlify trả trang (edge function chạy trước redirect), với các đường dẫn bên dưới:
 //   /tu/<id>-<slug>   lấy từ từ Supabase → trả CHÍNH index.html của app nhưng đã thay <title>, meta, canonical, Open Graph, thêm JSON-LD
-//                     và một khối nội dung <article id="seoWord"> (định nghĩa, ví dụ, từ liên quan) → app vẫn chạy y như cũ
+//                     và một khối nội dung <article id="seoWord"> (định nghĩa, ví dụ, từ liên quan) HIỂN THỊ THẬT (phủ kín màn hình, đọc được) trong lúc app tải → app vẫn chạy y như cũ
 //                     (app.js tự gỡ khối này khi hiển thị từ — xem loadWordFromLocation()).
 //                     slug sai/cũ → 301 về địa chỉ đúng; từ không tồn tại/đang ẩn → 404 + noindex (người dùng vẫn thấy app).
 //   /tu, /tu/         trang Danh mục từ (độc lập, đọc được không cần JS) — để Google/người dùng duyệt qua mọi từ
@@ -177,15 +177,15 @@ function buildWordSeo(word: any, rel: RelMap, origin: string) {
     ? '<section><h3>Nghĩa</h3><ul>' + meaningsArr.map((m) => '<li>' + esc(toPlain(m)) + '</li>').join('') + '</ul></section>' : '';
 
   const article =
-    '<article id="seoWord" lang="vi" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden">'
+    '<article id="seoWord" lang="vi" style="position:fixed;inset:0;z-index:2147483000;overflow:auto;box-sizing:border-box;padding:24px 16px 56px;background:var(--canvas-bg,#F5F3ED);color:var(--text-primary,#51463F);font:16px/1.6 \'Bai Jamjuree\',system-ui,-apple-system,sans-serif">'
+    + '<div style="max-width:760px;margin:0 auto">'
+    + '<p><a href="/" style="display:inline-block;padding:8px 16px;border-radius:999px;background:var(--accent,#3D6B85);color:#fff;font-weight:600;text-decoration:none">Mở alay để tra từ</a></p>'
     + '<h1><span lang="th">' + esc(word.thai) + '</span>' + (phonetic ? ' <small>(' + esc(phonetic) + ')</small>' : '') + ' — nghĩa tiếng Việt</h1>'
     + (word.type ? '<p>Loại từ: ' + esc(word.type) + '</p>' : '')
     + (word.structure ? '<p>Cấu tạo: <span lang="th">' + esc(toPlain(word.structure)) + '</span></p>' : '')
     + defsHtml + fallbackMeanings
     + '<nav aria-label="Điều hướng"><a href="/">alay – Từ điển Thái Việt</a> · <a href="/tu/">Danh mục từ</a></nav>'
-    + '</article>'
-    // Người dùng tắt JavaScript thì app không chạy được: cho khối nội dung hiện ra bình thường thay vì giấu ngoài màn hình
-    + '<noscript><style>#seoWord{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;max-width:760px;margin:0 auto;padding:16px;font-family:system-ui,sans-serif}</style></noscript>';
+    + '</div></article>';
 
   const graph = {
     '@context': 'https://schema.org',

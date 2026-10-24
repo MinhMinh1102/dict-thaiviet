@@ -8,7 +8,7 @@
 // - Tài nguyên bên ngoài (Google Fonts, Tesseract CDN...): cache-first.
 // ============================================================
 
-const CACHE_VERSION = 'alay-v231'; // bump len v103: doi cho icon loa/font-preview canh khung 4-font, loa chuyen xuong canh gop y
+const CACHE_VERSION = 'alay-v238'; // bump len v103: doi cho icon loa/font-preview canh khung 4-font, loa chuyen xuong canh gop y
                                           // thể" ở Font Challenge — icon mới cạnh tiêu đề mở
                                           // popup danh sách font (xem trước bằng chính font đó,
                                           // kèm số câu + huy hiệu độ khó nếu đã phân loại). Chọn

@@ -1139,9 +1139,9 @@ function resetSEO() {
 
 // Đọc từ trong URL hiện tại (dạng mới /tu/<id>-<slug> hoặc cũ ?w=<thai>) và hiển thị nếu tìm thấy
 async function loadWordFromLocation() {
-  // Khối <article id="seoWord"> do máy chủ đúc sẵn cho Google (netlify/edge-functions/word-seo.ts): app sắp hiển thị chính từ đó nên gỡ đi để khỏi trùng nội dung
-  const seoWord = document.getElementById('seoWord');
-  if (seoWord) seoWord.remove();
+  // Khối <article id="seoWord"> do máy chủ đúc sẵn (netlify/edge-functions/word-seo.ts) đang HIỂN THỊ phủ màn hình trong lúc app tải:
+  // chỉ gỡ SAU KHI app đã vẽ xong từ đó (hoặc khi không có từ để vẽ) để người dùng không thấy khoảng trống ở giữa.
+  const removeSeoWord = () => { const el = document.getElementById('seoWord'); if (el) el.remove(); };
   const path = window.location.pathname;
   const tuMatch = path.match(/^\/tu\/(\d+)(?:-.*)?$/);
   if (tuMatch) {
@@ -1151,6 +1151,7 @@ async function loadWordFromLocation() {
       setSearchInputValue(word.thai);
       syncHeaderSearchValue(word.thai);
       showResult(word);
+      removeSeoWord();
       addRecent(word);
       updateWordSEO(word, false);
       return true;
@@ -1165,6 +1166,7 @@ async function loadWordFromLocation() {
       setSearchInputValue(word.thai);
       syncHeaderSearchValue(word.thai);
       showResult(word);
+      removeSeoWord();
       addRecent(word);
       // Nâng cấp link cũ lên URL sạch mới trong thanh địa chỉ (không thêm lịch sử mới)
       history.replaceState({ wordId: word.id }, '', wordPath(word));
@@ -1172,6 +1174,7 @@ async function loadWordFromLocation() {
       return true;
     }
   }
+  removeSeoWord();
   return false;
 }
 
@@ -2992,6 +2995,32 @@ function speak() {
 
 let currentSpeakingBtn = null;
 
+// Sửa lỗi "bấm loa trên điện thoại không có tiếng":
+//  1) Trình duyệt trong ứng dụng (Zalo/Facebook/Messenger...) thường KHÔNG có speechSynthesis -> trước đây lỗi im lặng.
+//  2) Chrome Android/Safari iOS nạp danh sách giọng đọc BỀ SAU (voiceschanged) và cần chọn đúng giọng tiếng Thái
+//     (u.voice) — chỉ đặt u.lang = 'th-TH' thì nhiều máy không phát gì.
+//  3) speak() ngay sau cancel() hay bị nuốt trên di động -> chờ ~80ms; resume() phòng trạng thái "paused" bị kẹt.
+//  4) Utterance không có tham chiếu có thể bị trình duyệt dọn rác giữa chừng (onend không bao giờ chạy) -> giữ ở activeUtterance.
+let activeUtterance = null;
+let thaiVoiceWarned = false;
+
+function hasSpeechSupport() {
+  return typeof window !== 'undefined' && 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance !== 'undefined';
+}
+function pickThaiVoice() {
+  if (!hasSpeechSupport()) return null;
+  const voices = window.speechSynthesis.getVoices() || [];
+  const th = voices.filter(v => /^th([-_]|$)/i.test(v.lang || ''));
+  return th.find(v => v.localService) || th[0] || null;
+}
+// Gọi sớm để trình duyệt di động bắt đầu nạp danh sách giọng đọc (Chrome Android nạp lười)
+if (hasSpeechSupport()) {
+  try {
+    window.speechSynthesis.getVoices();
+    if (window.speechSynthesis.addEventListener) window.speechSynthesis.addEventListener('voiceschanged', function() { window.speechSynthesis.getVoices(); });
+  } catch (e) { /* bỏ qua */ }
+}
+
 // Phát âm 1 đoạn text tiếng Thái bất kỳ (dùng chung cho tra từ đơn lẻ và tách từ).
 // Bấm khi ĐANG phát ở đúng nút đó -> dừng phát (toggle off), không phát chồng thêm lần nữa.
 // Bấm nút khác trong khi đang phát -> dừng bản đang phát rồi phát bản mới (không xếp hàng).
@@ -3000,21 +3029,61 @@ function speakText(text, btn) {
   if (!text) return;
   const btnEl = typeof btn === 'string' ? document.getElementById(btn) : btn;
 
-  if (speechSynthesis.speaking) {
+  if (!hasSpeechSupport()) {
+    showToast('⚠️ Trình duyệt này không hỗ trợ phát âm. Hãy mở alay bằng Chrome hoặc Safari.');
+    return;
+  }
+  const synth = window.speechSynthesis;
+
+  let cancelled = false;
+  if (synth.speaking || synth.pending) {
     const wasSameBtn = currentSpeakingBtn === btnEl;
-    speechSynthesis.cancel();
+    synth.cancel();
     if (wasSameBtn) return;
+    cancelled = true;
   }
 
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'th-TH'; u.rate = 0.85;
-  if (btnEl) {
-    btnEl.classList.add('playing');
-    u.onend = () => { btnEl.classList.remove('playing'); if (currentSpeakingBtn === btnEl) currentSpeakingBtn = null; };
-    u.onerror = () => { btnEl.classList.remove('playing'); if (currentSpeakingBtn === btnEl) currentSpeakingBtn = null; };
-  }
-  currentSpeakingBtn = btnEl || null;
-  speechSynthesis.speak(u);
+  const start = function() {
+    try { synth.resume(); } catch (e) { /* bỏ qua */ }
+    const voice = pickThaiVoice();
+    const u = new SpeechSynthesisUtterance(text);
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'th-TH'; }
+    u.rate = 0.85;
+    activeUtterance = u;
+
+    const done = function() {
+      if (btnEl) btnEl.classList.remove('playing');
+      if (currentSpeakingBtn === btnEl) currentSpeakingBtn = null;
+      if (activeUtterance === u) activeUtterance = null;
+    };
+    u.onend = done;
+    u.onerror = function(ev) {
+      done();
+      const code = ev && ev.error;
+      if (code === 'interrupted' || code === 'canceled') return; // do mình tự dừng, không phải lỗi
+      if (code === 'language-unavailable' || code === 'voice-unavailable' || code === 'synthesis-unavailable') {
+        showToast('⚠️ Thiết bị chưa có giọng đọc tiếng Thái. Hãy cài giọng Thái trong Cài đặt > Giọng nói / Chuyển văn bản thành giọng nói.');
+      } else if (code === 'not-allowed') {
+        showToast('⚠️ Trình duyệt chặn phát âm — hãy bấm loa thêm một lần nữa.');
+      }
+    };
+    if (btnEl) btnEl.classList.add('playing');
+    currentSpeakingBtn = btnEl || null;
+
+    // Có danh sách giọng nhưng không có giọng Thái -> báo 1 lần (vẫn thử phát bằng lang th-TH)
+    if (!voice && !thaiVoiceWarned && (synth.getVoices() || []).length) {
+      thaiVoiceWarned = true;
+      showToast('ℹ️ Máy chưa có giọng đọc tiếng Thái — nếu không nghe thấy, hãy cài giọng Thái trong Cài đặt.');
+    }
+    synth.speak(u);
+
+    // Phòng trường hợp trình duyệt nuốt lệnh phát (không bao giờ gọi onend/onerror): gỡ trạng thái "playing" bị kẹt
+    setTimeout(function() {
+      if (activeUtterance === u && !synth.speaking && !synth.pending) done();
+    }, 4000);
+  };
+
+  if (cancelled) setTimeout(start, 80); else start();
 }
 
 // ── FAVORITES ─────────────────────────────────────────
@@ -10625,9 +10694,8 @@ function syncExampleVideoControls() {
     speedBtn.textContent = String(exampleVideoRate).replace('.', ',') + 'x';
     speedBtn.classList.toggle('active', exampleVideoRate !== 1); // sáng lên khi đang không phải tốc độ thường
   }
-  const nav = document.getElementById('exampleVideoNav');
-  if (nav) nav.style.display = (exampleVideoState.captions && exampleVideoState.captions.length) ? '' : 'none';
   const hasCaps = !!(exampleVideoState.captions && exampleVideoState.captions.length);
+  document.querySelectorAll('#exampleVideoControls .ev-nav-btn').forEach(el => { el.style.display = hasCaps ? '' : 'none'; }); // Câu trước/Câu sau nằm hai bên nút phát, cần phụ đề tự viết
   const capsOn = exampleVideoCapsOn();
   const cc = document.getElementById('exampleVideoCcBtn');
   if (cc) {
@@ -10661,7 +10729,7 @@ function syncExampleVideoControls() {
     if (!(hasCaps && capsOn)) { panel.innerHTML = ''; exampleVideoCapIdx = -1; closeExampleVideoLookup(); }
   }
   const actions = document.getElementById('exampleVideoActions');
-  if (actions) actions.style.display = exampleVideoState.id ? '' : 'none'; // "Lưu video" áp dụng cho MỌI video; "Lưu câu"/"Luyện tập" cần phụ đề tự viết
+  if (actions) actions.style.display = (exampleVideoState.id && hasCaps) ? '' : 'none'; // hàng này chỉ còn các nút theo câu (cần phụ đề tự viết); "Lưu video" nằm ở dòng nguồn và áp dụng cho MỌI video
   ['exampleVideoSaveBtn', 'exampleVideoPracticeBtn', 'exampleVideoSpeakBtn'].forEach(id => { const b = document.getElementById(id); if (b) b.style.display = hasCaps ? '' : 'none'; });
   syncExampleVideoSaveVideoBtn();
   exampleVideoSaveIdx = -2;
@@ -11148,14 +11216,14 @@ function renderExampleVideoSpeaking() {
   }
   let resultHTML = '';
   if (speakState.listening) {
-    resultHTML = '<div class="ev-speak-live-wrap"><span class="ev-speak-rec-dot"></span><span id="exampleVideoSpeakLive" class="ev-speak-live">' + escapeHtml(exampleVideoSpeakLiveText()) + '</span></div><div class="ev-speak-hint">Đang nghe… cứ nói chậm cũng được, app sẽ chờ bạn. Nói xong bấm micro để dừng.</div>';
+    resultHTML = '<div class="ev-speak-live-wrap"><span class="ev-speak-rec-dot"></span><span id="exampleVideoSpeakLive" class="ev-speak-live">' + escapeHtml(exampleVideoSpeakLiveText()) + '</span></div>';
   } else if (res) {
     const label = res.score >= 85 ? 'Rất tốt 🎉' : (res.score >= 60 ? 'Khá tốt, gần đúng rồi' : 'Chưa khớp, thử lại nhé');
     resultHTML = '<div class="ev-speak-score ' + (res.score >= 85 ? 'great' : (res.score >= 60 ? 'good' : 'low')) + '"><span class="ev-speak-score-num">' + res.score + '%</span><span class="ev-speak-score-label">' + label + '</span></div>';
   } else if (speakState.error) {
     resultHTML = '<div class="ev-speak-msg err">' + escapeHtml(speakErrorMessage(speakState.error)) + '</div>';
   } else {
-    resultHTML = '<div class="ev-speak-hint">Bấm micro rồi đọc câu trên. Nên bấm "Nghe mẫu" trước.</div>';
+    resultHTML = '';
   }
   box.innerHTML =
     '<div class="ev-speak-head"><span class="ev-speak-title">' + EV_LINE_ICON_MIC + 'Luyện nói</span>'
